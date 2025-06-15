@@ -1,0 +1,13 @@
+Flask
+Flask-RESTful
+Flask-SQLAlchemy
+Werkzeug
+Click
+itsdangerous
+Jinja2
+MarkupSafe
+aniso8601
+pytz
+six
+cryptography
+PyMySQL
