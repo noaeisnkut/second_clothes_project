@@ -11,3 +11,4 @@ pytz
 six
 cryptography
 PyMySQL
+pytest
