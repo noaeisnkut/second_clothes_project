@@ -24,10 +24,19 @@ jobs:
 
       - name: Run tests in test container
         run: docker-compose run --rm test
+        
+      - name: Echo success
+        if: success()
+        run: echo "The test has finished, your code runs okay!"
+
+      - name: Echo failure
+        if: failure()
+        run: echo "The test failed - try again!"
 
       - name: Tear down containers
         run: docker-compose down -v
-
+        
+      
 
 
          
