@@ -39,7 +39,7 @@ services:
     image: test:latest
     build:
       context: .
-      dockerfile: Dockerfile.test
+      dockerfile: Dockerfile
     depends_on:
       - flask_app
       - mysql
