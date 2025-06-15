@@ -50,7 +50,7 @@ services:
       DB_PASSWORD: password
     volumes:
       - ./app:/app
-    command: ["pytest", "app_test.py"]
+    command: ["pytest", "App_test.py"]
 
 volumes:
   mysql-data:
