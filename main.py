@@ -9,8 +9,7 @@ app.secret_key = os.getenv("SECRET_KEY", "dev_secret_key")
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
-
+app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://{}:{}@{}/{}'.format(
     os.getenv('DB_USER', 'root'),
     os.getenv('DB_PASSWORD', 'pass'),
