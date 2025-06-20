@@ -20,7 +20,7 @@ jobs:
         run: docker compose up -d --build
 
       - name: Check test success
-        run: docker-compose run --rm test
+        run: docker compose run --rm test
 
       - name: Echo success
         if: success()
