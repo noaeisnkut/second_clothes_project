@@ -7,6 +7,3 @@ RUN pip install --upgrade Flask Flask-SQLAlchemy Werkzeug
 RUN pip install -r requirements.txt
 COPY . .
 CMD ["python", "main.py"]
-
-
-
