@@ -1,4 +1,4 @@
-name: test & deploy docker
+name: Test, deploy and build image in Docker Hub
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-test-run-second-hand-clothes-project:
+  test-deploy-build-image:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,27 +16,30 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build & start containers
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and start containers
         run: docker compose up -d --build
 
-      - name: Check test success
+      - name: Run test container
         run: docker compose run --rm test
 
-      - name: Echo success
+      - name: Check if tests succeeded
         if: success()
-        run: echo "Amazing! Everything works, test passed!"
+        run: docker compose build
 
-      - name: Echo failure
+      - name: Handle test failure
         if: failure()
         run: echo "Something went wrong..."
 
-      - name: Take containers down
-        run: docker compose down -v
+      - name: Push image to Docker Hub
+        if: success()
+        run: docker compose push
 
-          
-      
-        
-      
-
-
-         
+      - name: Final check if failed
+        if: failure()
+        run: echo "Something went wrong..."
