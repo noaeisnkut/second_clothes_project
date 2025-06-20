@@ -9,11 +9,8 @@ services:
       - "5000:5000"
     volumes:
       - ./static/uploads:/app/static/uploads
-    environment:
-      DB_HOST: mysql
-      DB_NAME: flask
-      DB_USER: flask
-      DB_PASSWORD: password
+    env_file:
+      - pass_env1
     depends_on:
       mysql:
         condition: service_healthy
@@ -21,11 +18,8 @@ services:
   mysql:
     container_name: mysql
     image: mysql:latest
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: flask
-      MYSQL_USER: flask
-      MYSQL_PASSWORD: password
+    env_file:
+      - db/cred.env
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
@@ -39,20 +33,16 @@ services:
     image: test:latest
     build:
       context: .
-      dockerfile: Dockerfile.test
+      dockerfile: Dockerfile
     depends_on:
       - flask_app
       - mysql
-    environment:
-      DB_HOST: mysql
-      DB_NAME: flask
-      DB_USER: flask
-      DB_PASSWORD: password
+    env_file:
+      - pass_env1
     volumes:
-      - ./app:/app
-    command: ["pytest", "app_test.py"]
+      - .:/app
 
+    command: ["pytest", "app_test.py"]
 volumes:
   mysql-data:
-
 

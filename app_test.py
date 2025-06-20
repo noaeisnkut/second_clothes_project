@@ -1,5 +1,5 @@
 import pytest
-from app import app
+from main import app
 
 @pytest.fixture
 def client():
@@ -10,3 +10,4 @@ def client():
 def test_index_status_code(client):
     response = client.get('/')
     assert response.status_code == 200
+
