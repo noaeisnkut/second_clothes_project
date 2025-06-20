@@ -1,4 +1,4 @@
-name: run test and run project
+name: test & deploy docker
 
 on:
   push:
@@ -6,35 +6,35 @@ on:
       - main
 
 jobs:
-  build-test-run-project:
+  build-test-run-second-hand-clothes-project:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code 
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and start containers
-        run: docker compose up -d --build
+      - name: Build & start containers
+        run: docker-compose up -d --build
 
-      - name: Wait for services to be ready
-        run: sleep 15
+      - name: Check test success
+        run: docker-compose run --rm test
 
-      - name: Run tests in test container
-        run: docker compose run --rm test
-        
       - name: Echo success
         if: success()
-        run: echo "The test has finished, your code runs okay!"
+        run: echo "Amazing! Everything works, test passed!"
 
       - name: Echo failure
         if: failure()
-        run: echo "The test failed - try again!"
+        run: echo "Something went wrong..."
 
-      - name: Tear down containers
-        run: docker compose down -v
+      - name: Take containers down
+        run: docker-compose down -v
+
+          
+      
         
       
 
