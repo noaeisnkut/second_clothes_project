@@ -1,3 +1,4 @@
+
 services:
   flask_app:
     container_name: flask_app
@@ -9,8 +10,11 @@ services:
       - "5000:5000"
     volumes:
       - ./static/uploads:/app/static/uploads
-    env_file:
-      - pass_env1
+    environment:
+      DB_HOST: mysql
+      DB_NAME: flask
+      DB_USER: flask
+      DB_PASSWORD: password  
     depends_on:
       mysql:
         condition: service_healthy
@@ -18,8 +22,11 @@ services:
   mysql:
     container_name: mysql
     image: mysql:latest
-    env_file:
-      - db/cred.env
+    environment:
+      MYSQL_ROOT_PASSWORD: password  # root password
+      MYSQL_DATABASE: flask         # DB name
+      MYSQL_USER: flask             # user
+      MYSQL_PASSWORD: password      # user password
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
@@ -37,12 +44,15 @@ services:
     depends_on:
       - flask_app
       - mysql
-    env_file:
-      - pass_env1
+    environment:
+      DB_HOST: mysql
+      DB_NAME: flask
+      DB_USER: flask
+      DB_PASSWORD: password
     volumes:
       - .:/app
-
     command: ["pytest", "app_test.py"]
+
 volumes:
   mysql-data:
 
