@@ -1,5 +1,4 @@
-name: run test and run project
-
+name: run test and project
 on:
   push:
     branches:
