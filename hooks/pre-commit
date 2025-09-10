@@ -1,4 +1,3 @@
-# Create pre-commit hook
 cat > .git/hooks/pre-commit << 'EOF'
 #!/bin/bash
 
@@ -27,3 +26,12 @@ echo "Pre-commit checks passed!"
 EOF
 
 chmod +x .git/hooks/pre-commit
+
+
+
+
+
+
+
+
+
