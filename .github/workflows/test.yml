@@ -29,7 +29,7 @@ jobs:
         run: sleep 15
 
       - name: Run tests in test container
-        run: docker compose run --rm test
+        run: docker compose -f ./infra/docker-compose.yml run --rm test
         
       - name: Echo success
         if: success()
@@ -40,4 +40,4 @@ jobs:
         run: echo "The test failed - try again!"
 
       - name: Tear down containers
-        run: docker compose down -v
+        run: docker compose -f ./infra/docker-compose.yml down -v
