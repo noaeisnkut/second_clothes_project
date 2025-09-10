@@ -32,7 +32,7 @@ services:
     container_name: test_app
     image: test:latest
     build:
-      context: .
+      context: ../backend
       dockerfile: Dockerfile
     depends_on:
       - flask_app
