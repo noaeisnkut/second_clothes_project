@@ -1,57 +1,43 @@
-name: Test, deploy and build image in Docker Hub
-
+name: run test and test project
 on:
   push:
     branches:
       - main
 
 jobs:
-  test-and-push:
+  build-test-run-project:
     runs-on: ubuntu-latest
 
     steps:
-      # ---- Checkout repository ----
-      - name: Checkout code
+      - name: Checkout code 
         uses: actions/checkout@v3
 
-      # ---- Set up Docker Buildx ----
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      # ---- Log in to Docker Hub ----
+        
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+          
 
-      # ---- Build and start all services ----
-      - name: Build and run services
-        run: |
-          docker compose -f ./infra/docker-compose.yml up --build -d
-        env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-          MYSQL_USER: ${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      - name: Build and start containers
+        run: docker compose -f ./infra/docker-compose.yml up --build -d
 
-      # ---- Run test container with proper environment variables ----
-      - name: Run test container
-        run: |
-          docker compose -f ./infra/docker-compose.yml run --rm \
-          -e DB_HOST=mysql \
-          -e DB_NAME=${{ secrets.MYSQL_DATABASE }} \
-          -e DB_USER=${{ secrets.MYSQL_USER }} \
-          -e DB_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
-          test
+      - name: Wait for services to be ready
+        run: sleep 15
 
-      # ---- Push image to Docker Hub if tests pass ----
-      - name: Push image to Docker Hub
+      - name: Run tests in test container
+        run: docker compose run --rm test
+        
+      - name: Echo success
         if: success()
         run: docker compose -f ./infra/docker-compose.yml push
 
-      # ---- Handle workflow failure ----
-      - name: Handle failure
+      - name: Echo failure
         if: failure()
-        run: echo "The workflow failed. Check the logs for more details."
+        run: echo "The test failed - try again!"
 
+      - name: Tear down containers
+        run: docker compose down -v
