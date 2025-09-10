@@ -41,7 +41,7 @@ services:
       - ../database/pass_env1
     volumes:
       - .:/app
+    command: ["pytest", "/app/backend/app_test.py"]
 
-    command: ["pytest", "app_test.py"]
 volumes:
   mysql-data:
