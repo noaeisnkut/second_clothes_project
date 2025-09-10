@@ -33,6 +33,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  test:
+    container_name: test
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    command: ["pytest", "app_test.py", "--maxfail=1", "--disable-warnings", "-q"]
 
 volumes:
   mysql-data:
