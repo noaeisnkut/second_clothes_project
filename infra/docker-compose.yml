@@ -38,6 +38,9 @@ services:
     build:
       context: ../backend
       dockerfile: Dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
     command: ["pytest", "app_test.py", "--maxfail=1", "--disable-warnings", "-q"]
 
 volumes:
