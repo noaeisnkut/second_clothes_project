@@ -33,15 +33,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  test:
-    container_name: test
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
-    depends_on:
-      mysql:
-        condition: service_healthy
-        command: ["./wait-for-mysql.sh", "pytest", "app_test.py", "--maxfail=1", "--disable-warnings", "-q"]
+test:
+  container_name: test
+  build:
+    context: ../backend
+    dockerfile: Dockerfile
+  depends_on:
+    mysql:
+      condition: service_healthy
+  command: [".infra/wait-for-mysql.sh", "pytest", "app_test.py", "--maxfail=1", "--disable-warnings", "-q"]
+
 
 volumes:
   mysql-data:
