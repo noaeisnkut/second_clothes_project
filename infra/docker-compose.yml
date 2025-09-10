@@ -41,7 +41,6 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-    command: ["/bin/sh", "-c", "./infra/wait-for-mysql.sh && pytest app_test.py --maxfail=1 --disable-warnings -q"]
-
+    command: ["/bin/sh", "-c", "/app/wait-for-mysql.sh && pytest app_test.py --maxfail=1 --disable-warnings -q"]
 volumes:
   mysql-data:
