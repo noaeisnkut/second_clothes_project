@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   flask_app:
     container_name: flask_app
@@ -9,11 +11,8 @@ services:
       - "5000:5000"
     volumes:
       - ./static/uploads:/app/static/uploads
-    environment:
-      DB_HOST: ${DB_HOST}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
+    env_file:
+      - .env
     depends_on:
       mysql:
         condition: service_healthy
@@ -21,31 +20,26 @@ services:
   mysql:
     container_name: mysql
     image: mysql:latest
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    env_file:
+      - .env
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "mysql"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+
   test:
     container_name: test
     build:
       context: ../backend
       dockerfile: Dockerfile
+    env_file:
+      - .env
     depends_on:
       mysql:
         condition: service_healthy
-    environment:
-      DB_HOST: ${DB_HOST}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
     command: ["/bin/sh", "-c", "/app/wait-for-mysql.sh && pytest app_test.py --maxfail=1 --disable-warnings -q"]
 
 volumes:
