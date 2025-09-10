@@ -46,5 +46,3 @@ jobs:
       - name: Handle failure
         if: failure()
         run: echo "The workflow failed. Check the logs for more details."
-      - name: Clean up
-        if: always()    
