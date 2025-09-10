@@ -4,6 +4,7 @@ COPY requirements.txt .
 COPY app_test.py .
 COPY wait-for-mysql.sh /app/wait-for-mysql.sh
 RUN chmod +x /app/wait-for-mysql.sh
+RUN apt-get update && apt-get install -y default-mysql-client
 RUN pip install --upgrade pip
 RUN pip install --upgrade Flask Flask-SQLAlchemy Werkzeug
 RUN pip install -r requirements.txt
