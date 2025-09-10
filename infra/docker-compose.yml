@@ -2,15 +2,15 @@ services:
   flask_app:
     container_name: flask_app
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: Dockerfile
     image: flask_app:latest
     ports:
       - "5000:5000"
     volumes:
-      - ./static/uploads:/app/static/uploads
+      - ../static/uploads:/app/static/uploads
     env_file:
-      - database/pass_env1
+      - ../database/cred.env
     depends_on:
       mysql:
         condition: service_healthy
@@ -19,9 +19,9 @@ services:
     container_name: mysql
     image: mysql:latest
     env_file:
-      - database/cred.env
+      - ../database/pass_env1
     volumes:
-      - mysql-data:/var/lib/mysql
+      - ../mysql-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -38,7 +38,7 @@ services:
       - flask_app
       - mysql
     env_file:
-      - database/pass_env1
+      - ../database/pass_env1
     volumes:
       - .:/app
 
