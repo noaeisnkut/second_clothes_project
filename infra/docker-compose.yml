@@ -41,6 +41,12 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
     command: ["/bin/sh", "-c", "/app/wait-for-mysql.sh && pytest app_test.py --maxfail=1 --disable-warnings -q"]
+
 volumes:
   mysql-data:
