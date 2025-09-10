@@ -1,48 +1,54 @@
 name: Test, deploy and build image in Docker Hub
 
+
 on:
-  push:
-    branches:
-      - main
+ push:
+   branches:
+     - main
+
 
 jobs:
-  test-and-push:
-    runs-on: ubuntu-latest
+ test-and-push:
+   runs-on: ubuntu-latest
+  
+   steps:
+     - name: Checkout code
+       uses: actions/checkout@v3
+
+
+     - name: Set up Docker Buildx
+       uses: docker/setup-buildx-action@v3
+
+
+     - name: Log in to Docker Hub
+       uses: docker/login-action@v2
+       with:
+         username: ${{ secrets.DOCKER_USERNAME }}
+         password: ${{ secrets.DOCKER_PASSWORD }}
+
+
+     - name: Build and run services
+       run: docker compose -f ./infra/docker-compose.yml up --build -d
+       env:
+         MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+         MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+         MYSQL_USER: ${{ secrets.MYSQL_USER }}
+         MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+
+
+     - name: Run test container
+       run: docker compose -f ./infra/docker-compose.yml run --rm test
+       env:
+         DB_HOST: mysql
+         DB_NAME: flask
+         DB_USER: ${{ secrets.MYSQL_USER }}
+         DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+
+
+     - name: Push image to Docker Hub
+       if: success()
+       run: docker compose -f ./infra/docker-compose.yml push
     
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Create .env file for Docker Compose
-        run: |
-          echo "DB_HOST=mysql" >> .env
-          echo "DB_NAME=${{ secrets.MYSQL_DATABASE }}" >> .env
-          echo "DB_USER=${{ secrets.MYSQL_USER }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
-          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
-          echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env
-          echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
-          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
-
-      - name: Build and run services
-        run: docker compose -f ./infra/docker-compose.yml up --build -d
-
-      - name: Run test container
-        run: docker compose -f ./infra/docker-compose.yml run --rm test
-
-      - name: Push image to Docker Hub
-        if: success()
-        run: docker compose -f ./infra/docker-compose.yml push
-
-      - name: Handle failure
-        if: failure()
-        run: echo "The workflow failed. Check the logs for more details."
+     - name: Handle failure
+       if: failure()
+       run: echo "The workflow failed. Check the logs for more details."
