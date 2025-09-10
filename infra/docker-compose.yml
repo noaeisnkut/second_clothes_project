@@ -10,7 +10,7 @@ services:
     volumes:
       - ../static/uploads:/app/static/uploads
     env_file:
-      - ../database/cred.env
+      - ../database/pass_env1
     depends_on:
       mysql:
         condition: service_healthy
@@ -19,7 +19,7 @@ services:
     container_name: mysql
     image: mysql:latest
     env_file:
-      - ../database/pass_env1
+      - ../database/cred.env
     volumes:
       - ../mysql-data:/var/lib/mysql
     healthcheck:
