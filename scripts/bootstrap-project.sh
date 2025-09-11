@@ -6,7 +6,6 @@ git push -u origin develop
 if [ ! -f .gitignore ]; then
     echo "node_modules/" >> .gitignore
     echo "*.log" >> .gitignore
-    echo ".env" >> .gitignore
 fi
 
 git add .gitignore
