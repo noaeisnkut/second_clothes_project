@@ -33,7 +33,7 @@ jobs:
         
       - name: Echo success
         if: success()
-        run: docker compose -f ./infra/docker-compose.yml push
+        run: docker compose -f ./infra/docker-compose.yml push flask_app
 
       - name: Echo failure
         if: failure()
