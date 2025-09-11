@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="../frontend")
 app.secret_key = os.getenv("SECRET_KEY", "dev_secret_key")
 
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
@@ -39,7 +39,6 @@ class AddClothe(db.Model):
 def index():
     clothes = AddClothe.query.all()
     return render_template("home_page.html", clothes=clothes)
-
 @app.route('/add', methods=["GET"])
 def add_page():
     if "username" not in session:
