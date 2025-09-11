@@ -9,6 +9,7 @@ services:
       - "5000:5000"
     volumes:
       - ../static/uploads:/app/static/uploads
+      - ../frontend:/app/frontend
     env_file:
       - ../database/pass_env1
     depends_on:
