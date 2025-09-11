@@ -9,6 +9,7 @@ services:
       - "5000:5000"
     volumes:
       - ../frontend:/app/frontend
+      - ~/.aws:/root/.aws:ro  
     env_file:
       - ../database/pass_env1
     depends_on:
@@ -42,7 +43,9 @@ services:
     volumes:
       - ../backend:/app
       - ../frontend:/app/frontend
+      - ~/.aws:/root/.aws:ro   
     command: ["pytest", "/app/app_test.py"]
+
 
 volumes:
   mysql-data:
