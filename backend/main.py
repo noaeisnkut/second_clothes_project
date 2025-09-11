@@ -1,18 +1,20 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-import os
+from werkzeug.utils import secure_filename
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TEMPLATES_DIR = os.path.join(BASE_DIR, "frontend")  # Corrected path to templates
-print("Looking for templates in:", TEMPLATES_DIR)
-app = Flask(__name__, template_folder=TEMPLATES_DIR)
+app = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, "frontend"),
+    static_folder=os.path.join(BASE_DIR, "frontend", "static")
+)
 
-app.secret_key = os.getenv("SECRET_KEY", "dev_secret_key")
-
-UPLOAD_FOLDER = os.path.join('static', 'uploads')
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "frontend", "static", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.secret_key = os.getenv("SECRET_KEY", "dev_secret_key")
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://{}:{}@{}/{}'.format(
     os.getenv('DB_USER', 'root'),
@@ -23,6 +25,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://{}:{}@{}/{}'.format(
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+
 
 
 class User(db.Model):
@@ -65,7 +68,7 @@ def add():
     image_filename = None
 
     if image:
-        image_filename = image.filename
+        image_filename = secure_filename(image.filename)
         image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
 
     new_clothe = AddClothe(title=title, owner=session["username"], image_filename=image_filename, price=price,
