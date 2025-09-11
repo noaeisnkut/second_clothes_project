@@ -42,6 +42,7 @@ services:
       - ../database/pass_env1
     volumes:
       - ../backend:/app
+      - ../frontend:/app/frontend
     command: ["pytest", "/app/app_test.py"]
 
 volumes:
