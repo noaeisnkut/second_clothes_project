@@ -21,16 +21,23 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           
-
       - name: Build and start containers
         run: docker compose -f ./infra/docker-compose.yml up --build -d
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1  
 
       - name: Wait for services to be ready
         run: sleep 15
 
       - name: Run tests in test container
         run: docker compose -f ./infra/docker-compose.yml run --rm test
-        
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+
       - name: Echo success
         if: success()
         run: docker compose -f ./infra/docker-compose.yml push flask_app
@@ -41,3 +48,4 @@ jobs:
 
       - name: Tear down containers
         run: docker compose -f ./infra/docker-compose.yml down -v
+
