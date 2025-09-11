@@ -28,18 +28,21 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-s3 = boto3.client("s3")
-
 bucket_name = "my-second-hand-clothes-storage"
+region = "us-east-1"  # או כל region אחר שתבחרי
+
+s3 = boto3.client("s3", region_name=region)
 
 try:
     s3.head_bucket(Bucket=bucket_name)
 except botocore.exceptions.ClientError:
-    s3.create_bucket(
-        Bucket=bucket_name,
-        CreateBucketConfiguration={'LocationConstraint': 'us-east-1'}
-    )
-
+    if region == "us-east-1":
+        s3.create_bucket(Bucket=bucket_name)
+    else:
+        s3.create_bucket(
+            Bucket=bucket_name,
+            CreateBucketConfiguration={'LocationConstraint': region}
+        )
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -84,7 +87,7 @@ def add():
       image_filename = secure_filename(image.filename)
       local_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
       image.save(local_path)
-      s3.upload_file(local_path, BUCKET_NAME, image_filename)
+      s3.upload_file(local_path, bucket_name, image_filename)
 
 
     new_clothe = AddClothe(title=title, owner=session["username"], image_filename=image_filename, price=price,
@@ -151,6 +154,17 @@ def delete(clothe_id):
 
 
 if __name__ == "__main__":
+    try:
+        s3.head_bucket(Bucket=bucket_name)
+    except botocore.exceptions.ClientError:
+        if region == "us-east-1":
+            s3.create_bucket(Bucket=bucket_name)
+        else:
+            s3.create_bucket(
+                Bucket=bucket_name,
+                CreateBucketConfiguration={'LocationConstraint': region}
+            )
+
     with app.app_context():
         db.create_all()
     app.run(host=os.getenv('IP', '0.0.0.0'), debug=True)
