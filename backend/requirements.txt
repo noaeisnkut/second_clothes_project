@@ -1,4 +1,5 @@
 Flask
+boto3
 Flask-RESTful
 Flask-SQLAlchemy
 Werkzeug
