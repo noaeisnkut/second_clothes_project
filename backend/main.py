@@ -1,4 +1,5 @@
 import os
+import boto3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -26,6 +27,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+    region_name=os.getenv("AWS_REGION", "us-east-1")
+)
+BUCKET_NAME = os.getenv("AWS_BUCKET_NAME", "my-second-hand-clothes-storage")
 
 
 class User(db.Model):
@@ -68,8 +76,11 @@ def add():
     image_filename = None
 
     if image:
-        image_filename = secure_filename(image.filename)
-        image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+      image_filename = secure_filename(image.filename)
+      local_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+      image.save(local_path)
+      s3.upload_file(local_path, BUCKET_NAME, image_filename)
+
 
     new_clothe = AddClothe(title=title, owner=session["username"], image_filename=image_filename, price=price,
                            size=size, contact=contact)

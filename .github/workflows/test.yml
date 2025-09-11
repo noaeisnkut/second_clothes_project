@@ -2,7 +2,7 @@ name: run test and test project
 on:
   push:
     branches:
-      - main
+      - s3
 
 jobs:
   build-test-run-project:
