@@ -40,8 +40,8 @@ services:
     env_file:
       - ../database/pass_env1
     volumes:
-      - .:/app
-    command: ["pytest", "/app/backend/app_test.py"]
+      - ../backend:/app
+    command: ["pytest", "/app/app_test.py"]
 
 volumes:
   mysql-data:
