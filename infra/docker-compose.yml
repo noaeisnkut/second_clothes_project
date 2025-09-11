@@ -1,3 +1,5 @@
+version: '3.9'
+
 services:
   flask_app:
     container_name: flask_app
@@ -39,11 +41,14 @@ services:
       - mysql
     env_file:
       - ../database/pass_env1
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_DEFAULT_REGION
     volumes:
       - ../backend:/app
       - ../frontend:/app/frontend
     command: ["pytest", "/app/app_test.py"]
-
 
 volumes:
   mysql-data:
