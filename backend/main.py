@@ -1,4 +1,5 @@
 import os
+import botocore
 import boto3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -27,13 +28,17 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-s3 = boto3.client(
-    "s3",
-    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-    region_name=os.getenv("AWS_REGION", "us-east-1")
-)
-BUCKET_NAME = os.getenv("AWS_BUCKET_NAME", "my-second-hand-clothes-storage")
+s3 = boto3.client("s3")
+
+bucket_name = "my-second-hand-clothes-storage"
+
+try:
+    s3.head_bucket(Bucket=bucket_name)
+except botocore.exceptions.ClientError:
+    s3.create_bucket(
+        Bucket=bucket_name,
+        CreateBucketConfiguration={'LocationConstraint': 'us-east-1'}
+    )
 
 
 class User(db.Model):
