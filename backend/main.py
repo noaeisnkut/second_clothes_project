@@ -3,7 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
-app = Flask(__name__, template_folder="../frontend")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATES_DIR = os.path.join(BASE_DIR, "../frontend")
+print("Looking for templates in:", TEMPLATES_DIR)
+
+
+app = Flask(__name__, template_folder=TEMPLATES_DIR)
+
 app.secret_key = os.getenv("SECRET_KEY", "dev_secret_key")
 
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
