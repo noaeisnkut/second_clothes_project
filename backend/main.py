@@ -29,7 +29,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 bucket_name = "my-second-hand-clothes-storage"
-region = "us-east-1"  # או כל region אחר שתבחרי
+region = "us-east-1"  
 
 s3 = boto3.client("s3", region_name=region)
 
