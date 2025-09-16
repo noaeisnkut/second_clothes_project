@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   flask_app:
     container_name: flask_app
@@ -13,6 +11,7 @@ services:
       - ../frontend:/app/frontend
     env_file:
       - ../database/pass_env1
+      - ../database/pass_s3_env
     depends_on:
       mysql:
         condition: service_healthy
@@ -41,10 +40,8 @@ services:
       - mysql
     env_file:
       - ../database/pass_env1
-    environment:
-      - AWS_ACCESS_KEY_ID
-      - AWS_SECRET_ACCESS_KEY
-      - AWS_DEFAULT_REGION
+      - ../database/pass_s3_env 
+
     volumes:
       - ../backend:/app
       - ../frontend:/app/frontend
