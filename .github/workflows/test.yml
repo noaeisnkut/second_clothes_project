@@ -43,6 +43,18 @@ jobs:
         if: success()
         run: docker compose -f ./infra/docker-compose.yml push flask_app
 
+      - name: Push to S3
+        if: success()
+        run: | 
+          docker save noa10203040/flask_app:latest | gzip > flask_app_latest.tar.gz
+          docker save noa10203040/flask_app > flask_app.tar
+          echo "Docker images saved to tar files."
+          aws s3 cp flask_app.tar.gz s3://second-clothes-project/flask_app_latest.tar.gz
+        env:  
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+
       - name: Echo failure
         if: failure()
         run: echo "The test failed - try again!"
