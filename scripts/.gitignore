@@ -1,3 +1,5 @@
 node_modules/
 *.log
-mysql-data/
+__pycache__/
+*.pyc
+mysql_data/
