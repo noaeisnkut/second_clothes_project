@@ -12,10 +12,7 @@ services:
     env_file:
       - ../database/pass_env1
       - ../database/pass_s3_env
-    environment:  
-      - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      
     depends_on:
       mysql:
         condition: service_healthy
@@ -45,11 +42,7 @@ services:
     env_file:
       - ../database/pass_env1
       - ../database/pass_s3_env 
-    environment:  
-      - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-
+    
     volumes:
       - ../backend:/app
       - ../frontend:/app/frontend
