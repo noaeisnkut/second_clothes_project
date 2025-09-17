@@ -174,7 +174,7 @@ def delete(clothe_id):
     if clothe and clothe.owner == session["username"]:
         db.session.delete(clothe)
         db.session.commit()
-        s3.delete_object(Bucket=bucket_name, Key=clothe.image_filename)
+        s3
         flash("Item deleted.", 'success')
     else:
         flash("You can only delete your own items.", 'error')
@@ -182,5 +182,18 @@ def delete(clothe_id):
 
 
 if __name__ == "__main__":
-    db.create_all()
+    try:
+        s3.head_bucket(Bucket=bucket_name)
+    except botocore.exceptions.ClientError:
+        if region == "us-east-1":
+            s3.create_bucket(Bucket=bucket_name)
+        else:
+            s3.create_bucket(
+                Bucket=bucket_name,
+                CreateBucketConfiguration={'LocationConstraint': region}
+            )
+
+    with app.app_context():
+        db.create_all()
     app.run(host=os.getenv('IP', '0.0.0.0'), debug=True)
+
