@@ -174,6 +174,7 @@ def delete(clothe_id):
     if clothe and clothe.owner == session["username"]:
         db.session.delete(clothe)
         db.session.commit()
+        s3.delete_object(Bucket=bucket_name, Key=clothe.image_filename)
         flash("Item deleted.", 'success')
     else:
         flash("You can only delete your own items.", 'error')
