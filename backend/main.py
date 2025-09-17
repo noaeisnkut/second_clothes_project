@@ -29,20 +29,33 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 bucket_name = "my-second-hand-clothes-storage"
-region = "us-east-1"  
+region = os.getenv("AWS_REGION", "us-east-1")
 
-s3 = boto3.client("s3", region_name=region)
+aws_access_key = os.getenv("AWS_ACCESS_KEY_ID")
+aws_secret_key = os.getenv("AWS_SECRET_ACCESS_KEY")
+
+s3 = boto3.client(
+    "s3",
+    region_name=region,
+    aws_access_key_id=aws_access_key,
+    aws_secret_access_key=aws_secret_key
+)
 
 try:
     s3.head_bucket(Bucket=bucket_name)
-except botocore.exceptions.ClientError:
-    if region == "us-east-1":
-        s3.create_bucket(Bucket=bucket_name)
+except botocore.exceptions.ClientError as e:
+    error_code = e.response['Error']['Code']
+    if error_code == "404":
+        if region == "us-east-1":
+            s3.create_bucket(Bucket=bucket_name)
+        else:
+            s3.create_bucket(
+                Bucket=bucket_name,
+                CreateBucketConfiguration={'LocationConstraint': region}
+            )
     else:
-        s3.create_bucket(
-            Bucket=bucket_name,
-            CreateBucketConfiguration={'LocationConstraint': region}
-        )
+        raise
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
