@@ -3,3 +3,4 @@ node_modules/
 __pycache__/
 *.pyc
 mysql_data/
+database/pass_s3_env
