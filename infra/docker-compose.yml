@@ -9,10 +9,13 @@ services:
       - "5000:5000"
     volumes:
       - ../frontend:/app/frontend
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
     env_file:
       - ../database/pass_env1
-      - ../database/pass_s3_env
-      
+  
     depends_on:
       mysql:
         condition: service_healthy
@@ -39,10 +42,13 @@ services:
     depends_on:
       - flask_app
       - mysql
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
     env_file:
       - ../database/pass_env1
-      - ../database/pass_s3_env 
-    
+
     volumes:
       - ../backend:/app
       - ../frontend:/app/frontend
