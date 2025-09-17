@@ -40,7 +40,21 @@ s3 = boto3.client(
     aws_access_key_id=aws_access_key,
     aws_secret_access_key=aws_secret_key
 )
+upload_folder = os.path.join(BASE_DIR, "frontend", "static", "uploads")
 
+for filename in os.listdir(upload_folder):
+    local_path = os.path.join(upload_folder, filename)
+    if os.path.isfile(local_path):
+        try:
+            s3.head_object(Bucket=bucket_name, Key=filename)
+            print(f"{filename} already exists in S3, skipping upload.")
+        except botocore.exceptions.ClientError as e:
+            error_code = int(e.response['Error']['Code'])
+            if error_code == 404:
+                s3.upload_file(local_path, bucket_name, filename)
+                print(f"Uploaded {filename} to S3")
+            else:
+                raise
 try:
     s3.head_bucket(Bucket=bucket_name)
 except botocore.exceptions.ClientError as e:
