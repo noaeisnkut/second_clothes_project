@@ -7,13 +7,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
 app = Flask(
     __name__,
-    template_folder=os.path.join(BASE_DIR, "frontend"),
-    static_folder=os.path.join(BASE_DIR, "frontend", "static")
+    template_folder=os.path.join(FRONTEND_DIR),
+    static_folder=os.path.join(FRONTEND_DIR, "static")
 )
-
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "frontend", "static", "uploads")
+UPLOAD_FOLDER = os.path.join(FRONTEND_DIR, "static", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = os.getenv("SECRET_KEY", "dev_secret_key")
