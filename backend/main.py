@@ -114,9 +114,8 @@ def add():
       image_filename = secure_filename(image.filename)
       local_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
       image.save(local_path)
-      s3.upload_file(local_path, bucket_name, image_filename)
-
-
+      s3.upload_file(local_path, bucket_name, image_filename, ExtraArgs={'ACL':'public-read'})
+      
     new_clothe = AddClothe(title=title, owner=session["username"], image_filename=image_filename, price=price,
                            size=size, contact=contact)
     db.session.add(new_clothe)
