@@ -38,7 +38,7 @@
             <strong>{{ item.title }}</strong>
 
             {% if item.image_filename %}
-                <img src="{{ url_for('static', filename='uploads/' ~ item.image_filename) }}" alt="{{ item.title }}">
+                <img src="https://my-second-hand-clothes-storage.s3.amazonaws.com/{{ item.image_filename }}" alt="{{ item.title }}">
             {% endif %}
 
             {% if item.price %}
