@@ -82,7 +82,7 @@ def index():
             item.s3_url = s3.generate_presigned_url(
                 'get_object',
                 Params={'Bucket': bucket_name, 'Key': item.image_filename},
-                ExpiresIn=3600
+                ExpiresIn=604800
             )
 
     return render_template("home_page.html", clothes=clothes)
