@@ -76,7 +76,17 @@ class AddClothe(db.Model):
 @app.route('/')
 def index():
     clothes = AddClothe.query.all()
+
+    for item in clothes:
+        if item.image_filename:
+            item.s3_url = s3.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': bucket_name, 'Key': item.image_filename},
+                ExpiresIn=3600
+            )
+
     return render_template("home_page.html", clothes=clothes)
+
 @app.route('/add', methods=["GET"])
 def add_page():
     if "username" not in session:
@@ -102,8 +112,8 @@ def add():
       image_filename = secure_filename(image.filename)
       local_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
       image.save(local_path)
-      s3.upload_file(local_path, bucket_name, image_filename, ExtraArgs={'ACL':'public-read'})
-      
+      s3.upload_file(local_path, bucket_name, image_filename)
+
     new_clothe = AddClothe(title=title, owner=session["username"], image_filename=image_filename, price=price,
                            size=size, contact=contact)
     db.session.add(new_clothe)

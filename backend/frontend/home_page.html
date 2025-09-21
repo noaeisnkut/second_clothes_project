@@ -36,27 +36,13 @@
     {% for item in clothes %}
         <li>
             <strong>{{ item.title }}</strong>
+            <p>Price: {{ item.price }}</p>
+            <p>Owner: {{ item.owner }}</p>
+            <p>Size: {{ item.size }}</p>
+            <p>Contact: {{ item.contact }}</p>
 
-            {% if item.image_filename %}
-                <img src="https://my-second-hand-clothes-storage.s3.amazonaws.com/{{ item.image_filename }}" alt="{{ item.title }}">
-            {% endif %}
-
-            {% if item.price %}
-                <div class="price">${{ '%.2f'|format(item.price|float) }}</div>
-            {% endif %}
-
-            <p>Uploaded by: {{ item.owner }}</p>
-
-            {% if item.contact %}
-                <p>Contact: {{ item.contact }}</p>
-            {% endif %}
-
-            {% if item.size %}
-                <p>Size: {{ item.size }}</p>
-            {% endif %}
-
-            {% if session.username == item.owner %}
-                <a href="{{ url_for('delete', clothe_id=item.id) }}"><button>Delete</button></a>
+            {% if item.s3_url %}
+                <img src="{{ item.s3_url }}" alt="{{ item.title }}" width="200">
             {% endif %}
         </li>
     {% endfor %}
@@ -64,5 +50,6 @@
 
 </body>
 </html>
+
 
 
