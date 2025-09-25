@@ -41,9 +41,10 @@
             <p>Size: {{ item.size }}</p>
             <p>Contact: {{ item.contact }}</p>
 
-            {% if item.s3_url %}
-                <img src="{{ item.s3_url }}" alt="{{ item.title }}" width="200">
+            {% if item.image_filename %}
+            <img src="{{ url_for('uploaded_file', filename=item.image_filename) }}" alt="{{ item.title }}" width="200">
             {% endif %}
+
 
             {% if session.username == item.owner %}
                 <form action="{{ url_for('delete', clothe_id=item.id) }}" method="POST" style="display:inline;">

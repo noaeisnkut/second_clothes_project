@@ -5,16 +5,21 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
+from flask import send_from_directory
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "mysql-data", "uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app = Flask(
     __name__,
-    template_folder=os.path.join(FRONTEND_DIR),
-    static_folder=os.path.join(FRONTEND_DIR, "static")
+    template_folder=os.path.join(BASE_DIR, "frontend"),
+    static_folder=os.path.join(BASE_DIR, "frontend", "static")
 )
-UPLOAD_FOLDER = os.path.join(FRONTEND_DIR, "static", "uploads")
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = os.getenv("SECRET_KEY", "dev_secret_key")
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
@@ -109,18 +114,25 @@ def add():
     image_filename = None
 
     if image:
-      image_filename = secure_filename(image.filename)
-      local_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
-      image.save(local_path)
-      s3.upload_file(local_path, bucket_name, image_filename)
+        image_filename = secure_filename(image.filename)
+        local_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+        image.save(local_path)
+        s3.upload_file(local_path, bucket_name, image_filename)
 
-    new_clothe = AddClothe(title=title, owner=session["username"], image_filename=image_filename, price=price,
-                           size=size, contact=contact)
+    new_clothe = AddClothe(
+        title=title,
+        owner=session["username"],
+        image_filename=image_filename,
+        price=price,
+        size=size,
+        contact=contact
+    )
     db.session.add(new_clothe)
     db.session.commit()
 
     flash("Product added successfully!", 'success')
     return redirect(url_for("index"))
+
 
 
 @app.route('/sign-up', methods=["GET", "POST"])
@@ -171,10 +183,17 @@ def delete(clothe_id):
     if clothe and clothe.owner == session["username"]:
         db.session.delete(clothe)
         db.session.commit()
-        s3.delete_object(Bucket=bucket_name, Key=clothe.image_filename)
+        if clothe.image_filename:
+            local_path = os.path.join(app.config['UPLOAD_FOLDER'], clothe.image_filename)
+            if os.path.exists(local_path):
+                os.remove(local_path)
+        if clothe.image_filename:
+            s3.delete_object(Bucket=bucket_name, Key=clothe.image_filename)
+
         flash("Item deleted.", 'success')
     else:
         flash("You can only delete your own items.", 'error')
+
     return redirect(url_for("index"))
 
 
