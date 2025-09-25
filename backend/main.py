@@ -161,7 +161,7 @@ def log_in():
     return render_template("log_in.html")
 
 
-@app.route('/delete/<int:clothe_id>')
+@app.route('/delete/<int:clothe_id>', methods=["POST"])
 def delete(clothe_id):
     if "username" not in session:
         flash("You must be logged in to delete a product.", 'error')
