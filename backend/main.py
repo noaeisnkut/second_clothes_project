@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) 
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "mysql-data", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app = Flask(
@@ -17,9 +17,9 @@ app = Flask(
 )
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-@app.route('/uploads/<filename>')
+@app.route("/uploads/<filename>")
 def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 app.secret_key = os.getenv("SECRET_KEY", "dev_secret_key")
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
