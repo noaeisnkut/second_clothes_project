@@ -84,7 +84,7 @@ def index():
                 Params={'Bucket': bucket_name, 'Key': item.image_filename},
                 ExpiresIn=604800
             )
-
+            print(item.image_filename, item.s3_url)
     return render_template("home_page.html", clothes=clothes)
 
 @app.route('/add', methods=["GET"])
