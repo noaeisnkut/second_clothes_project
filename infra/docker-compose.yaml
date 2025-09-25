@@ -10,6 +10,7 @@ services:
     volumes:
       - ../backend:/app/backend
       - ../backend/frontend:/app/backend/frontend
+      - ../mysql-data/uploads:/app/backend/mysql-data/uploads
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
@@ -53,6 +54,7 @@ services:
     volumes:
       - ../backend:/app/backend
       - ../backend/frontend:/app/backend/frontend
+      - ../mysql-data/uploads:/app/backend/mysql-data/uploads
     command: ["pytest", "/app/backend/app_test.py"]
 
 volumes:

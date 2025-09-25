@@ -7,19 +7,22 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) 
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "mysql-data", "uploads")
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 app = Flask(
     __name__,
     template_folder=os.path.join(BASE_DIR, "frontend"),
     static_folder=os.path.join(BASE_DIR, "frontend", "static")
 )
+
+UPLOAD_FOLDER = "/app/backend/mysql-data/uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-@app.route("/uploads/<filename>")
+@app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
-    return send_from_directory(UPLOAD_FOLDER, filename)
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 app.secret_key = os.getenv("SECRET_KEY", "dev_secret_key")
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
@@ -45,8 +48,6 @@ s3 = boto3.client(
     aws_access_key_id=aws_access_key,
     aws_secret_access_key=aws_secret_key
 )
-upload_folder = os.path.join(BASE_DIR, "frontend", "static", "uploads")
-
 
 try:
     s3.head_bucket(Bucket=bucket_name)
@@ -81,15 +82,6 @@ class AddClothe(db.Model):
 @app.route('/')
 def index():
     clothes = AddClothe.query.all()
-
-    for item in clothes:
-        if item.image_filename:
-            item.s3_url = s3.generate_presigned_url(
-                'get_object',
-                Params={'Bucket': bucket_name, 'Key': item.image_filename},
-                ExpiresIn=604800
-            )
-            print(item.image_filename, item.s3_url)
     return render_template("home_page.html", clothes=clothes)
 
 @app.route('/add', methods=["GET"])
@@ -114,10 +106,11 @@ def add():
     image_filename = None
 
     if image:
-        image_filename = secure_filename(image.filename)
-        local_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+        filename = secure_filename(image.filename)  
+        local_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         image.save(local_path)
-        s3.upload_file(local_path, bucket_name, image_filename)
+        s3.upload_file(local_path, bucket_name, filename)
+        image_filename = filename
 
     new_clothe = AddClothe(
         title=title,
@@ -132,6 +125,7 @@ def add():
 
     flash("Product added successfully!", 'success')
     return redirect(url_for("index"))
+
 
 
 
