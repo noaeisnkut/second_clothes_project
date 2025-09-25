@@ -48,12 +48,16 @@
                title="Enter a price between $1 and $800">
     {% endif %}
 
-    <label>Size:</label>
-    {% set sizes = ['XS', 'S', 'M', 'L', 'XL'] %}
-    {% for s in sizes %}
-        <input type="radio" name="size" value="{{ s }}" id="size-{{ s }}" {% if product and product.size == s %}checked{% endif %} {% if loop.first %}required{% endif %}>
-        <label for="size-{{ s }}">{{ s }}</label>
-    {% endfor %}
+    <label for="size">Size:</label>
+    <select name="size" id="size" required>
+    <option value="">Select size</option>  
+    <option value="XS" {% if product and product.size == 'XS' %}selected{% endif %}>XS</option>
+    <option value="S"  {% if product and product.size == 'S' %}selected{% endif %}>S</option>
+    <option value="M"  {% if product and product.size == 'M' %}selected{% endif %}>M</option>
+    <option value="L"  {% if product and product.size == 'L' %}selected{% endif %}>L</option>
+    <option value="XL" {% if product and product.size == 'XL' %}selected{% endif %}>XL</option>
+</select>
+
 
     <label for="image">Upload Image:</label>
     <input type="file" name="image" id="image" accept="image/*" required>
