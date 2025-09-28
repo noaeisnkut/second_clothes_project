@@ -15,7 +15,7 @@ app = Flask(
     static_folder=os.path.join(BASE_DIR, "frontend", "static")
 )
 
-UPLOAD_FOLDER = "/app/backend/mysql-data/uploads"
+UPLOAD_FOLDER = "/app/frontend/uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
