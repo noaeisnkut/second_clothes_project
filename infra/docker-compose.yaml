@@ -10,7 +10,7 @@ services:
     volumes:
       - ../backend:/app/backend
       - ../backend/frontend:/app/backend/frontend
-      - ../mysql-data/uploads:/app/backend/mysql-data/uploads
+      - uploads-data:/app/backend/mysql-data/uploads
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
@@ -28,7 +28,7 @@ services:
     env_file:
       - ../database/cred.env
     volumes:
-      - ../mysql-data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -54,8 +54,9 @@ services:
     volumes:
       - ../backend:/app/backend
       - ../backend/frontend:/app/backend/frontend
-      - ../mysql-data/uploads:/app/backend/mysql-data/uploads
+      - uploads-data:/app/backend/mysql-data/uploads
     command: ["pytest", "/app/backend/app_test.py"]
 
 volumes:
   mysql-data:
+  uploads-data:
