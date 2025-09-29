@@ -48,4 +48,4 @@ jobs:
         run: echo "The test failed - try again!"
 
       - name: Tear down containers
-        run: docker compose -f ./infra/docker-compose.yaml down -v
+        run: docker compose -f ./infra/docker-compose.yaml down 
