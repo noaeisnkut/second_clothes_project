@@ -10,14 +10,13 @@ services:
     volumes:
       - ../backend:/app/backend
       - ../backend/frontend:/app/backend/frontend
-      - ../mysql-data/uploads:/app/backend/mysql-data/uploads
+      - flask-uploads-volume:/app/backend/frontend/uploads
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=us-east-1
     env_file:
       - ../database/pass_env1
-  
     depends_on:
       mysql:
         condition: service_healthy
@@ -28,7 +27,7 @@ services:
     env_file:
       - ../database/cred.env
     volumes:
-      - ../mysql-data:/var/lib/mysql
+      - mysql-volume-from-dumb:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -50,9 +49,13 @@ services:
       - AWS_REGION=us-east-1
     env_file:
       - ../database/pass_env1
-
+    command: ["pytest", "/app/backend/app_test.py"]
     volumes:
       - ../backend:/app/backend
       - ../backend/frontend:/app/backend/frontend
-      - ../mysql-data/uploads:/app/backend/mysql-data/uploads
-    command: ["pytest", "/app/backend/app_test.py"]
+      - flask-uploads-volume:/app/backend/frontend/uploads
+
+volumes:
+  flask-uploads-volume:
+  mysql-volume-from-dumb:
+
