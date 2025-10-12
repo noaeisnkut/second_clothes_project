@@ -1,7 +1,0 @@
-node_modules/
-*.log
-backend/__pycache__/
-*.pyc
-mysql_data/
-database/pass_s3_env
-.env
