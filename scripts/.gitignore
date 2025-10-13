@@ -15,4 +15,5 @@ mysql-volume.tar
 temp-pods.yaml
 uploads-volume.tar
 ec2_terra_task/credentials
-first_terraform/.terraform/
+first_terraform/.terraform
+ec2_terra_task/credentials
