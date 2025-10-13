@@ -2,7 +2,7 @@ node_modules/
 *.log
 backend/__pycache__/
 *.pyc
-mysql_data/
+mysql-data/
 database/pass_s3_env
 .env
 .github/workflows/deployment_service.yaml
