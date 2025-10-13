@@ -1,0 +1,37 @@
+cat > .git/hooks/pre-commit << 'EOF'
+#!/bin/bash
+
+# Check commit message format (this runs on commit, not pre-commit)
+# But we can check for common issues here
+
+echo "Running pre-commit checks..."
+
+# Check for large files
+large_files=$(git diff --cached --name-only | xargs -I {} sh -c 'test -f {} && test $(stat -c%s {}) -gt 1048576 && echo {}' || true)
+
+if [ ! -z "$large_files" ]; then
+    echo "Error: Large files detected (>1MB):"
+    echo "$large_files"
+    echo "Please use Git LFS for large files or ensure they should be committed."
+    exit 1
+fi
+
+# Check for secrets (basic check)
+if git diff --cached | grep -E "(password|secret|key|token)" | grep -v "# password" | grep -q .; then
+    echo "Warning: Potential secrets detected in commit. Please review."
+    echo "If these are intentional, add '# password' comment to bypass this check."
+fi
+
+echo "Pre-commit checks passed!"
+EOF
+
+chmod +x .git/hooks/pre-commit
+
+
+
+
+
+
+
+
+

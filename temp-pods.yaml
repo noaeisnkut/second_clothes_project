@@ -1,0 +1,33 @@
+apiVersion: v1 
+kind: Pod
+metadata:
+  name: temp-mysql-copy
+spec:
+  containers:
+  - name: mysql 
+    image: busybox
+    command: ["sleep", "3600"]
+    volumeMounts:
+    - name: mysql-data
+      mountPath: /var/lib/mysql
+  volumes:
+  - name: mysql-data
+    persistentVolumeClaim:
+      claimName: mysql-pvc1
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: temp-flask-copy
+spec:
+  containers:
+  - name: flask
+    image: busybox
+    command: ["sleep", "3600"]
+    volumeMounts: 
+    - name: uploads-data
+      mountPath: /app/backend/frontend/uploads
+  volumes:  
+  - name: uploads-data
+    persistentVolumeClaim:
+      claimName: uploads-pvc
