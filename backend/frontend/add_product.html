@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Product</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h1>Add a New Clothing Item</h1>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div>
+            {% for category, message in messages %}
+                <p class="{{ category }}">{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<form action="{{ url_for('add') }}" method="POST" enctype="multipart/form-data">
+
+    <label for="title">Clothing Title:</label>
+    {% if product %}
+    <input type="text" name="title" id="title" 
+           value="{{ product.title }}" 
+           required 
+           maxlength="40" 
+           pattern="^[A-Za-z\s]+$" 
+           title="Only letters and spaces, up to 40 characters">
+    {% else %}
+    <input type="text" name="title" id="title" 
+           required 
+           maxlength="40" 
+           pattern="^[A-Za-z\s]+$" 
+           title="Only letters and spaces, up to 40 characters">
+    {% endif %}
+    <label for="price">Price ($):</label>
+    {% if product %}
+        <input type="number" name="price" id="price" 
+               value="{{ product.price }}" 
+               required min="1" max="800" step="0.01" 
+               title="Enter a price between $1 and $800">
+    {% else %}
+        <input type="number" name="price" id="price" 
+               required min="1" max="800" step="0.01" 
+               title="Enter a price between $1 and $800">
+    {% endif %}
+
+    <label for="size">Size:</label>
+    <select name="size" id="size" required>
+    <option value="">Select size</option>  
+    <option value="XS" {% if product and product.size == 'XS' %}selected{% endif %}>XS</option>
+    <option value="S"  {% if product and product.size == 'S' %}selected{% endif %}>S</option>
+    <option value="M"  {% if product and product.size == 'M' %}selected{% endif %}>M</option>
+    <option value="L"  {% if product and product.size == 'L' %}selected{% endif %}>L</option>
+    <option value="XL" {% if product and product.size == 'XL' %}selected{% endif %}>XL</option>
+</select>
+
+
+    <label for="image">Upload Image:</label>
+    <input type="file" name="image" id="image" accept="image/*" required>
+
+    <label for="contact">Contact Information (Phone or Email):</label>
+    {% if product %}
+        <input type="text" name="contact" id="contact" value="{{ product.contact }}" placeholder="Phone or Email" required>
+    {% else %}
+        <input type="text" name="contact" id="contact" placeholder="Phone or Email" required>
+    {% endif %}
+
+    <button type="submit">Add Product</button>
+</form>
+
+<p><a href="{{ url_for('index') }}"><button type="button">Back to Home</button></a></p>
+
+</body>
+</html>
+
+
