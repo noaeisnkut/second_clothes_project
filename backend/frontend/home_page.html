@@ -20,7 +20,10 @@
 {% endwith %}
 
 {% if session.username %}
-    <p>Hello, {{ session.username }}!</p>
+    <div class="welcome-message">
+        <p>Hello, {{ session.username }}! 💕</p>
+        <p class="invite-text">So good to see you again! What would you like to discover today? Maybe find a new treasure or share a special item?</p>
+    </div>
     <a href="{{ url_for('add_page') }}"><button>Add New Product</button></a>
 {% else %}
     <p>You are not logged in.</p>
@@ -56,3 +59,6 @@
         </li>
     {% endfor %}
 </ul>
+
+</body>
+</html>
