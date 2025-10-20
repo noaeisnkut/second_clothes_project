@@ -1,0 +1,5 @@
+apiVersion: v2
+name: myproject
+description: Helm chart for Flask + MySQL project
+version: 0.1.0
+appVersion: "1.0"

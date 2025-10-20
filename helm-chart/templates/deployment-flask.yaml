@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-deployment
+spec:
+  replicas: {{ .Values.flask.replicas }}
+  selector:
+    matchLabels:
+      app: flask
+  template:
+    metadata:
+      labels:
+        app: flask
+    spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            until nc -z mysql 3306; do
+              echo "waiting for mysql..."
+              sleep 2
+            done
+      containers:
+      - name: flask
+        image: {{ .Values.flask.image }}
+        ports:
+          - containerPort: {{ .Values.flask.containerPort }}
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.flask.aws.accessKeyIdSecret }}
+                key: AWS_ACCESS_KEY_ID
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.flask.aws.secretAccessKeySecret }}
+                key: AWS_SECRET_ACCESS_KEY
+          - name: AWS_REGION
+            value: {{ .Values.flask.aws.region }}
+          - name: DB_HOST
+            value: mysql
+          - name: DB_USER
+            value: {{ .Values.mysql.user }}
+          - name: DB_PASSWORD
+            value: {{ .Values.mysql.password }}
+          - name: DB_NAME
+            value: {{ .Values.mysql.database }}
+        volumeMounts:
+          - name: uploads-data
+            mountPath: /app/backend/frontend/uploads
+      volumes:
+        - name: uploads-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.flask.pvcName }}

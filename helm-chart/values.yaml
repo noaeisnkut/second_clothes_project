@@ -1,0 +1,20 @@
+mysql:
+  image: mysql:latest
+  pvcName: mysql-pvc1
+  rootPassword: password
+  database: flask
+  user: flask
+  password: password
+  storage: 1Gi
+
+flask:
+  image: noa10203040/flask_app:latest
+  replicas: 1
+  servicePort: 80
+  containerPort: 5000
+  pvcName: uploads-pvc
+  storage: 1Gi
+  aws:
+    accessKeyIdSecret: aws-credentials
+    secretAccessKeySecret: aws-credentials
+    region: us-east-1
