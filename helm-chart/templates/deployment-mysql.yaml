@@ -38,5 +38,10 @@ spec:
           periodSeconds: 5
       volumes:
         - name: mysql-data
+          {{- if .Values.mysql.useExistingPVC }}
           persistentVolumeClaim:
             claimName: {{ .Values.mysql.pvcName }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+

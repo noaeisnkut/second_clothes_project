@@ -54,5 +54,9 @@ spec:
             mountPath: /app/backend/frontend/uploads
       volumes:
         - name: uploads-data
+          {{- if .Values.flask.useExistingPVC }}
           persistentVolumeClaim:
             claimName: {{ .Values.flask.pvcName }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}

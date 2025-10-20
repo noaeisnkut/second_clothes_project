@@ -1,6 +1,7 @@
 mysql:
   image: mysql:latest
   pvcName: mysql-pvc1
+  useExistingPVC: true
   rootPassword: password
   database: flask
   user: flask
@@ -10,11 +11,13 @@ mysql:
 flask:
   image: noa10203040/flask_app:latest
   replicas: 1
-  servicePort: 80
   containerPort: 5000
+  servicePort: 80    
   pvcName: uploads-pvc
+  useExistingPVC: true
   storage: 1Gi
   aws:
     accessKeyIdSecret: aws-credentials
     secretAccessKeySecret: aws-credentials
     region: us-east-1
+
