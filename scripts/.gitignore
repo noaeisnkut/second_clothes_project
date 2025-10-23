@@ -17,3 +17,8 @@ uploads-volume.tar
 ec2_terra_task/credentials
 first_terraform/.terraform
 ec2_terra_task/credentials
+../backend/__pycache__/
+../uploads-data/
+../mysql-data/
+../terraform.tfstate.backup
+.terraform/
