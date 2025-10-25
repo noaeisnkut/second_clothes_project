@@ -22,3 +22,7 @@ ec2_terra_task/credentials
 ../mysql-data/
 ../terraform.tfstate.backup
 .terraform/
+backend/__pycache__/
+helm-chart/values-us-east-1a.yaml
+helm-chart/values-us-east-1b.yaml
+root/
