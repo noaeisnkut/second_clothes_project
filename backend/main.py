@@ -1,11 +1,11 @@
 import os
-import botocore
-import boto3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from flask import send_from_directory
+import boto3
+import botocore
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -15,157 +15,151 @@ app = Flask(
     static_folder=os.path.join(BASE_DIR, "frontend", "static")
 )
 
-UPLOAD_FOLDER = "/app/backend/frontend/uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-@app.route('/uploads/<path:filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
-
 app.secret_key = os.getenv("SECRET_KEY", "dev_secret_key")
-app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://{}:{}@{}/{}'.format(
-    os.getenv('DB_USER', 'root'),
-    os.getenv('DB_PASSWORD', 'pass'),
-    os.getenv('DB_HOST', 'flask_mysql'),
-    os.getenv('DB_NAME', 'flask')
-)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024 
 
-db = SQLAlchemy(app)
 
-bucket_name = "my-second-hand-clothes-storage"
+bucket_name = os.getenv("S3_BUCKET", "my-second-hand-clothes-storage")
 region = os.getenv("AWS_REGION", "us-east-1")
-
 aws_access_key = os.getenv("AWS_ACCESS_KEY_ID")
 aws_secret_key = os.getenv("AWS_SECRET_ACCESS_KEY")
 
+
 s3 = boto3.client(
-    "s3",
-    region_name=region,
-    aws_access_key_id=aws_access_key,
-    aws_secret_access_key=aws_secret_key
+   "s3",
+   region_name=region,
+   aws_access_key_id=aws_access_key,
+   aws_secret_access_key=aws_secret_key
 )
 
-try:
-    s3.head_bucket(Bucket=bucket_name)
-except botocore.exceptions.ClientError as e:
-    error_code = e.response['Error']['Code']
-    if error_code == "404":
-        if region == "us-east-1":
-            s3.create_bucket(Bucket=bucket_name)
-        else:
-            s3.create_bucket(
-                Bucket=bucket_name,
-                CreateBucketConfiguration={'LocationConstraint': region}
-            )
-    else:
-        raise
 
+def get_s3_url(filename):
+   try:
+       url = s3.generate_presigned_url(
+           'get_object',
+           Params={'Bucket': bucket_name, 'Key': filename},
+           ExpiresIn=3600
+       )
+       return url
+   except botocore.exceptions.ClientError as e:
+       print("Error generating S3 URL:", e)
+       return None
+
+DB_USER = os.getenv("DB_USER", "postgres")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "password")
+DB_HOST = os.getenv("DB_HOST", "postgres")
+DB_NAME = os.getenv("DB_NAME", "flask")
+DB_PORT = os.getenv("DB_PORT", 5432)
+
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
+db = SQLAlchemy(app)
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(200))
+   __tablename__ = 'app_user' 
+   id = db.Column(db.Integer, primary_key=True)
+   username = db.Column(db.String(100), unique=True)
+   password = db.Column('password_hash', db.String(200)) 
 
 class AddClothe(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100))
-    owner = db.Column(db.String(100))
-    image_filename = db.Column(db.String(200))
-    price = db.Column(db.Float)
-    contact = db.Column(db.String(100))
-    size = db.Column(db.String(20), nullable=True)
+   __tablename__ = 'add_clothe'
+   id = db.Column(db.Integer, primary_key=True)
+   name = db.Column('name', db.String(255))
+   user_fk = db.Column('user_fk', db.String(100)) 
+   s3_key = db.Column('image_url', db.String(200)) 
+   price = db.Column(db.Float)
+   contact_info = db.Column(db.String(100))
+   size = db.Column(db.String(20), nullable=True)
+
+
+   @property
+   def image_url(self):
+       if self.s3_key: 
+           return get_s3_url(self.s3_key)
+       return None
+
 
 @app.route('/')
 def index():
-    clothes = AddClothe.query.all()
-    return render_template("home_page.html", clothes=clothes)
-
-@app.route('/add', methods=["GET"])
-def add_page():
-    if "username" not in session:
-        flash("You must be logged in to add a product.", 'error')
-        return redirect(url_for("index"))
-    return render_template("add_product.html")
+   clothes = AddClothe.query.all()
+   return render_template("home_page.html", clothes=clothes)
 
 
-@app.route('/add_product', methods=["POST"])
+@app.route('/add', methods=["GET", "POST"])
 def add():
-    if "username" not in session:
-        flash("You must be logged in to add a product.", 'error')
-        return redirect(url_for("index"))
-
-    title = request.form.get("title")
-    price = request.form.get("price")
-    image = request.files.get("image")
-    contact = request.form.get("contact")
-    size = request.form.get("size")
-    image_filename = None
-
-    if image:
-        filename = secure_filename(image.filename)  
-        local_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        image.save(local_path)
-        s3.upload_file(local_path, bucket_name, filename)
-        image_filename = filename
-
-    new_clothe = AddClothe(
-        title=title,
-        owner=session["username"],
-        image_filename=image_filename,
-        price=price,
-        size=size,
-        contact=contact
-    )
-    db.session.add(new_clothe)
-    db.session.commit()
-
-    flash("Product added successfully!", 'success')
-    return redirect(url_for("index"))
+   if "username" not in session:
+       flash("Log in first!", "error")
+       return redirect(url_for("index"))
 
 
+   if request.method == "POST":
+       name = request.form.get("title")
+       price = request.form.get("price")
+       contact_info = request.form.get("contact")
+       size = request.form.get("size")
+       image_file = request.files.get("image")
+
+
+       image_filename = None
+       if image_file:
+           filename = secure_filename(image_file.filename)
+           local_path = f"/tmp/{filename}"
+           image_file.save(local_path)
+           s3.upload_file(local_path, bucket_name, filename)
+           image_filename = filename
+
+
+       new_item = AddClothe(
+           name=name,
+           user_fk=session["username"],
+           s3_key=image_filename,
+           price=price,
+           contact_info=contact_info,
+           size=size
+       )
+       db.session.add(new_item)
+       db.session.commit()
+       flash("Product added!", "success")
+       return redirect(url_for("index"))
+
+
+   return render_template("add_product.html")
 
 
 @app.route('/sign-up', methods=["GET", "POST"])
 def sign_up():
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
+   if request.method == "POST":
+       username = request.form.get("username")
+       password = request.form.get("password")
+       if User.query.filter_by(username=username).first():
+           flash("Username already exists.", "error")
+           return redirect(url_for("sign_up"))
+       hashed = generate_password_hash(password)
+       db.session.add(User(username=username, password=hashed))
+       db.session.commit()
+       flash("Account created! Log in.", "success")
+       return redirect(url_for("index"))
+   return render_template("sign_up.html")
 
-        if User.query.filter_by(username=username).first():
-            flash("Username already exists.", 'error')
-            return redirect(url_for("sign_up"))
-
-        hashed_password = generate_password_hash(password)
-        new_user = User(username=username, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-        flash("Account created successfully! Please log in.", 'success')
-        return redirect(url_for("index"))
-
-    return render_template("sign_up.html")
 
 
 @app.route('/log-in', methods=["GET", "POST"])
 def log_in():
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-
-        user = User.query.filter_by(username=username).first()
-        if user and check_password_hash(user.password, password):
-            session["username"] = user.username
-            flash("Logged in successfully.", 'success')
-            return redirect(url_for("index"))
-        else:
-            flash("Invalid username or password.", 'error')
-            return redirect(url_for("log_in"))
-
-    return render_template("log_in.html")
-
+   if request.method == "POST":
+       username = request.form.get("username")
+       password = request.form.get("password")
+       user = User.query.filter_by(username=username).first()
+       if user and check_password_hash(user.password, password):
+           session["username"] = user.username
+           flash("Logged in!", "success")
+           return redirect(url_for("index"))
+       else:
+           flash("Invalid login.", "error")
+           return redirect(url_for("log_in"))
+   return render_template("log_in.html")
 
 @app.route('/delete/<int:clothe_id>', methods=["POST"])
 def delete(clothe_id):
@@ -173,17 +167,16 @@ def delete(clothe_id):
         flash("You must be logged in to delete a product.", 'error')
         return redirect(url_for("index"))
 
-    clothe = AddClothe.query.get(clothe_id)
-    if clothe and clothe.owner == session["username"]:
+    clothe = AddClothe.query.get_or_404(clothe_id)
+    if clothe and clothe.user_fk == session["username"]:
+        if clothe.s3_key:
+            try:
+                s3.delete_object(Bucket=bucket_name, Key=clothe.s3_key)
+            except botocore.exceptions.ClientError as e:
+                print(f"Error deleting from S3: {e}")
         db.session.delete(clothe)
         db.session.commit()
-        if clothe.image_filename:
-            local_path = os.path.join(app.config['UPLOAD_FOLDER'], clothe.image_filename)
-            if os.path.exists(local_path):
-                os.remove(local_path)
-        if clothe.image_filename:
-            s3.delete_object(Bucket=bucket_name, Key=clothe.image_filename)
-
+        
         flash("Item deleted.", 'success')
     else:
         flash("You can only delete your own items.", 'error')
@@ -192,18 +185,6 @@ def delete(clothe_id):
 
 
 if __name__ == "__main__":
-    try:
-        s3.head_bucket(Bucket=bucket_name)
-    except botocore.exceptions.ClientError:
-        if region == "us-east-1":
-            s3.create_bucket(Bucket=bucket_name)
-        else:
-            s3.create_bucket(
-                Bucket=bucket_name,
-                CreateBucketConfiguration={'LocationConstraint': region}
-            )
-
-    with app.app_context():
-        db.create_all()
-    app.run(host=os.getenv('IP', '0.0.0.0'), debug=True)
-
+   with app.app_context():
+       pass
+   app.run(host='0.0.0.0', port=5000, debug=True)
