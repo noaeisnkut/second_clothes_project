@@ -18,8 +18,6 @@ secrets = json.loads(response["SecretString"])
 
 
 db_password = secrets["DB_PASSWORD"]
-aws_access_key_id = secrets["AWS_ACCESS_KEY_ID"]
-aws_secret_access_key = secrets["AWS_SECRET_ACCESS_KEY"]
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -36,15 +34,10 @@ app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 
 bucket_name = os.getenv("S3_BUCKET", "my-second-hand-clothes-storage")
 region = os.getenv("AWS_REGION", "us-east-1")
-aws_access_key = secrets["AWS_ACCESS_KEY_ID"]
-aws_secret_key = secrets["AWS_SECRET_ACCESS_KEY"]
-
 
 s3 = boto3.client(
    "s3",
    region_name=region,
-   aws_access_key_id=secrets["AWS_ACCESS_KEY_ID"],
-   aws_secret_access_key=secrets["AWS_SECRET_ACCESS_KEY"]
 )
 
 
