@@ -2,8 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flask
+  namespace: {{ .Values.namespace }}
 spec:
-  replicas: 2
+  replicas: {{ .Values.flask.replicas }}
   selector:
     matchLabels:
       app: flask
@@ -14,48 +15,22 @@ spec:
     spec:
       containers:
         - name: flask_app
-          image: noa10203040/flask_app:latest
+          image: {{ .Values.flask.image }}
           ports:
-            - containerPort: 5000
+            - containerPort: {{ .Values.flask.containerPort }}
+          envFrom:
+            - secretRef:
+                name: flask-app-secret-k8s 
           env:
             - name: DB_USER
               value: "postgres"
-            - name: DB_PASSWORD
-              value: "noa10203040"
             - name: DB_HOST
               value: "my-postgress-db.cc3m62swkfac.us-east-1.rds.amazonaws.com"
             - name: DB_NAME
               value: "flask"
             - name: DB_PORT
               value: "5432"
-            - name: AWS_ACCESS_KEY_ID
-              value: "<your_aws_access_key>"
-            - name: AWS_SECRET_ACCESS_KEY
-              value: "<your_aws_secret_key>"
             - name: AWS_REGION
-              value: "us-east-1"
-            - name: SECRET_KEY
-              value: "dev_secret_key"
-
-        - name: test_app
-          image: noa10203040/flask_app:latest
-          command: ["pytest", "/app/app_test.py"]
-          env:
-            - name: DB_USER
-              value: "postgres"
-            - name: DB_PASSWORD
-              value: "noa10203040"
-            - name: DB_HOST
-              value: "my-postgress-db.cc3m62swkfac.us-east-1.rds.amazonaws.com"
-            - name: DB_NAME
-              value: "flask"
-            - name: DB_PORT
-              value: "5432"
-            - name: AWS_ACCESS_KEY_ID
-              value: "<your_aws_access_key>"
-            - name: AWS_SECRET_ACCESS_KEY
-              value: "<your_aws_secret_key>"
-            - name: AWS_REGION
-              value: "us-east-1"
+              value: "{{ .Values.aws.region }}"
             - name: SECRET_KEY
               value: "dev_secret_key"
