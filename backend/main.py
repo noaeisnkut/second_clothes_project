@@ -5,6 +5,21 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import boto3
 import botocore
+import json
+
+
+
+SECRET_NAME = "flask-app-secret"
+AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
+
+client = boto3.client("secretsmanager", region_name=AWS_REGION)
+response = client.get_secret_value(SecretId=SECRET_NAME)
+secrets = json.loads(response["SecretString"])
+
+
+db_password = secrets["DB_PASSWORD"]
+aws_access_key_id = secrets["AWS_ACCESS_KEY_ID"]
+aws_secret_access_key = secrets["AWS_SECRET_ACCESS_KEY"]
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -21,15 +36,15 @@ app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 
 bucket_name = os.getenv("S3_BUCKET", "my-second-hand-clothes-storage")
 region = os.getenv("AWS_REGION", "us-east-1")
-aws_access_key = os.getenv("AWS_ACCESS_KEY_ID")
-aws_secret_key = os.getenv("AWS_SECRET_ACCESS_KEY")
+aws_access_key = secrets["AWS_ACCESS_KEY_ID"]
+aws_secret_key = secrets["AWS_SECRET_ACCESS_KEY"]
 
 
 s3 = boto3.client(
    "s3",
    region_name=region,
-   aws_access_key_id=aws_access_key,
-   aws_secret_access_key=aws_secret_key
+   aws_access_key_id=secrets["AWS_ACCESS_KEY_ID"],
+   aws_secret_access_key=secrets["AWS_SECRET_ACCESS_KEY"]
 )
 
 
@@ -46,7 +61,7 @@ def get_s3_url(filename):
        return None
 
 DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "password")
+DB_PASSWORD = secrets["DB_PASSWORD"]
 DB_HOST = os.getenv("DB_HOST", "postgres")
 DB_NAME = os.getenv("DB_NAME", "flask")
 DB_PORT = os.getenv("DB_PORT", 5432)

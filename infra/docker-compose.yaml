@@ -7,29 +7,34 @@ services:
     ports:
       - "5000:5000"
     environment:
-      DB_USER: postgres
-      DB_PASSWORD: noa10203040 
-      DB_HOST: my-postgress-db.cc3m62swkfac.us-east-1.rds.amazonaws.com 
-      DB_NAME: flask
-      DB_PORT: 5432
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      SECRET_NAME: flask-app-secret
       AWS_REGION: us-east-1
-      SECRET_KEY: dev_secret_key 
-
-  test:
-    container_name: test_app
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
-    environment:
       DB_USER: postgres
-      DB_PASSWORD: noa10203040
       DB_HOST: my-postgress-db.cc3m62swkfac.us-east-1.rds.amazonaws.com
       DB_NAME: flask
       DB_PORT: 5432
+      S3_BUCKET: my-second-hand-clothes-storage
+      SECRET_KEY: dev_secret_key
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+
+  test:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: test_app
+    environment:
+      SECRET_NAME: flask-app-secret
       AWS_REGION: us-east-1
+
+      DB_USER: postgres
+      DB_HOST: my-postgress-db.cc3m62swkfac.us-east-1.rds.amazonaws.com
+      DB_NAME: flask
+      DB_PORT: 5432
+      S3_BUCKET: my-second-hand-clothes-storage
       SECRET_KEY: dev_secret_key
-    command: ["pytest", "/app/app_test.py"] 
+
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+
+    command: ["pytest", "/app/app_test.py"]

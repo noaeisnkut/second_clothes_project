@@ -27,4 +27,5 @@ helm-chart/values-us-east-1a.yaml
 helm-chart/values-us-east-1b.yaml
 root/
 k9s_linux_amd64.deb
-root/live/prod/eks/.terragrunt-cache/7WY7PmZd4AVC2QikncWIQl6VWpE/0Y6J1EQouKsInJ2zXrE0nyfmnko
+root/live/prod/eks/.terragrunt-cache/*
+*/.terragrunt-cache
