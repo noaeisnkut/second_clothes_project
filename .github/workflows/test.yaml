@@ -1,16 +1,15 @@
-
-name: run test and test project
+name: CI/CD Test, Build & Push
 on:
   push:
     branches:
       - s3
 
 jobs:
-  build-test-run-project:
+  build-test-push:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout code 
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
@@ -22,10 +21,10 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           
-      - name: Build and start containers
+      - name: Build and start containers for testing
         run: docker compose -f ./infra/docker-compose.yaml up --build -d
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} 
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
 
@@ -39,13 +38,28 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
 
-      - name: Echo success
+      - name: Tear down containers after test
+        if: always() 
+        run: docker compose -f ./infra/docker-compose.yaml down
+      - name: Get image metadata (tags)
         if: success()
-        run: docker compose -f ./infra/docker-compose.yaml push flask_app
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKER_USERNAME }}/flask-app 
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=sha-
 
-      - name: Echo failure
+      - name: Build and push Flask image
+        if: success()
+        uses: docker/build-and-push-action@v5
+        with:
+          context: . 
+          file: ./backend/Dockerfile 
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          
+      - name: Report failure
         if: failure()
-        run: echo "The test failed - try again!"
-
-      - name: Tear down containers
-        run: docker compose -f ./infra/docker-compose.yaml down 
+        run: echo "The test failed - build and push skipped."
