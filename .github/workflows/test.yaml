@@ -1,4 +1,3 @@
-
 name: run test and test project
 on:
   push:
@@ -15,41 +14,39 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          
-      - name: Build and start containers
-        run: docker compose -f ./infra/docker-compose.yaml up --build -d
+
+      - name: Build flask_app
+        run: docker compose -f ./infra/docker-compose.yaml build flask_app
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
 
-      - name: Wait for services to be ready
-        run: sleep 15
+      - name: Tag flask_app for Docker Hub
+        run: docker tag flask_app noa10203040/flask_app:latest
 
-      - name: Run tests in test container
+      - name: Push flask_app to Docker Hub
+        run: docker push noa10203040/flask_app:latest
+
+      - name: Start services for testing
+        run: docker compose -f ./infra/docker-compose.yaml up -d test
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+
+      - name: Run tests
         run: docker compose -f ./infra/docker-compose.yaml run --rm test
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
 
-      - name: Echo success
-        if: success()
-        run: docker compose -f ./infra/docker-compose.yaml push flask_app
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1
-
-      - name: Echo failure
-        if: failure()
-        run: echo "The test failed - try again!"
-
       - name: Tear down containers
-        run: docker compose -f ./infra/docker-compose.yaml down 
+        run: docker compose -f ./infra/docker-compose.yaml down
