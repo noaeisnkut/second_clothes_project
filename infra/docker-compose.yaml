@@ -3,6 +3,7 @@ services:
     build:
       context: ../backend
       dockerfile: Dockerfile
+      image: noa10203040/flask_app:latest
     container_name: flask_app
     ports:
       - "5000:5000"
@@ -22,6 +23,7 @@ services:
     build:
       context: ../backend
       dockerfile: Dockerfile
+      image: noa10203040/test_app:latest
     container_name: test_app
     environment:
       SECRET_NAME: flask-app-secret
