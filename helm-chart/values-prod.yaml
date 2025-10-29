@@ -1,6 +1,6 @@
 namespace: prod
 flask:
-  image: noa10203040/flask_app:8d01d6d2
+  image: noa10203040/flask_app:f3e8ea3b
   replicas: 1
   containerPort: 5000
   servicePort: 80
