@@ -53,5 +53,6 @@ jobs:
 
     - name: Apply ArgoCD Application
       run: |
-        kubectl apply -f argocd-apps/flask-app-prod.yaml -n argocd
+        kubectl apply -f argocd-apps/flask-app-prod.yaml -n argocd --validate=false
+
 
