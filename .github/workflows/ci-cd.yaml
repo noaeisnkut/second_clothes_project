@@ -1,8 +1,8 @@
-name: CI/CD - dev
+name: CI/CD - prod
 on:
   push:
     branches:
-      - dev
+      - prod
 env:
   IMAGE_NAME: noa10203040/flask_app
   HELM_CHART_PATH: helm-chart
