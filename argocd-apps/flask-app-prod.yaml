@@ -7,7 +7,7 @@ spec:
   project: prod
   source:
     repoURL: 'https://github.com/noaeisnkut/second_clothes_project.git'
-    targetRevision: main
+    targetRevision: s3
     path: "helm-charts/myproject"
     helm:
       valueFiles:
