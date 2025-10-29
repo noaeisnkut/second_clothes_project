@@ -2,7 +2,7 @@ name: CI/CD - Prod
 on:
   push:
     branches:
-      - s3   
+      - s3
 env:
   IMAGE_NAME: noa10203040/flask_app
   HELM_CHART_PATH: helm-chart
@@ -42,6 +42,10 @@ jobs:
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
+
+    - name: Configure Git remote with token
+      run: |
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
     - name: Commit and push Helm values update
       run: |
