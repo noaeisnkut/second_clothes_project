@@ -6,15 +6,15 @@ metadata:
 spec:
   project: prod
   source:
-    repoURL: 'https://github.com/noaeisnkut/second_clothes_project.git' 
-    targetRevision: main   
-    path: "helm-charts/myproject" 
+    repoURL: 'https://github.com/noaeisnkut/second_clothes_project.git'
+    targetRevision: main
+    path: "helm-charts/myproject"
     helm:
       valueFiles:
-        - values-prod.yaml 
+        - values-prod.yaml
   destination:
-  server: 'https://kubernetes.default.svc'
-  namespace: prod
+    server: 'https://kubernetes.default.svc'
+    namespace: prod
   syncPolicy:
     automated:
       prune: true
