@@ -8,10 +8,10 @@ spec:
   source:
     repoURL: 'https://github.com/noaeisnkut/second_clothes_project.git'
     targetRevision: s3
-    path: "helm-charts/myproject"
+    path: "helm-charts"
     helm:
       valueFiles:
-        - values-prod.yaml
+        - helm-charts/values-prod.yaml
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: prod
