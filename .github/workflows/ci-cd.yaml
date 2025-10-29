@@ -15,6 +15,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
@@ -36,10 +38,13 @@ jobs:
       run: |
         yq e -i ".flask.image = \"${IMAGE_NAME}:${IMAGE_TAG}\"" $HELM_CHART_PATH/$HELM_VALUES_FILE
 
-    - name: Commit and push Helm values update
+    - name: Configure Git
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
+
+    - name: Commit and push Helm values update
+      run: |
         git add $HELM_CHART_PATH/$HELM_VALUES_FILE
-        git commit -m "Update Flask image to $IMAGE_NAME:$IMAGE_TAG"
+        git commit -m "Update Flask image to $IMAGE_NAME:$IMAGE_TAG" || echo "No changes to commit"
         git push origin s3
