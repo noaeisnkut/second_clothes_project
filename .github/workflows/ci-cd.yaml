@@ -6,9 +6,9 @@ on:
 
 env:
   IMAGE_NAME: noa10203040/flask_app
-  HELM_CHART_PATH: helm-charts/myproject
+  HELM_CHART_PATH: helm-charts
   K8S_NAMESPACE: prod
-  HELM_VALUES_FILE: values-prod.yaml
+  HELM_VALUES_FILE: helm-charts/values-prod.yaml
 
 jobs:
   build-and-deploy:
