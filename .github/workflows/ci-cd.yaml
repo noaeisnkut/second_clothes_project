@@ -50,3 +50,8 @@ jobs:
         git add $HELM_CHART_PATH/$HELM_VALUES_FILE
         git commit -m "Update Flask image to $IMAGE_NAME:$IMAGE_TAG" || echo "No changes to commit"
         git push origin s3
+
+    - name: Apply ArgoCD Application
+      run: |
+        kubectl apply -f argocd-apps/flask-app-prod.yaml -n argocd
+
