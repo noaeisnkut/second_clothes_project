@@ -38,6 +38,7 @@ jobs:
       run: |
         yq e -i ".flask.image = \"${IMAGE_NAME}:${IMAGE_TAG}\"" $HELM_CHART_PATH/$HELM_VALUES_FILE
 
+
     - name: Install ArgoCD CLI
       run: |
         curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
