@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: flask-app
+  namespace: argocd
+spec:
+  project: dev
+  source:
+    repoURL: 'https://github.com/noaeisnkut/second_clothes_project.git'
+    targetRevision: s3
+    path: "helm-chart"
+    helm:
+      valueFiles:
+        - helm-chart/values-dev.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+

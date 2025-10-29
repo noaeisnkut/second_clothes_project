@@ -1,0 +1,12 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: dev
+  namespace: argocd
+spec:
+  description: Development environment
+  sourceRepos:
+    - https://github.com/noaeisnkut/second_clothes_project.git
+  destinations:
+    - namespace: dev
+      server: https://kubernetes.default.svc
