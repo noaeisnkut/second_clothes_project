@@ -1,4 +1,5 @@
 name: CI/CD - Prod
+
 on:
   push:
     branches:
@@ -6,7 +7,7 @@ on:
 
 env:
   IMAGE_NAME: noa10203040/flask_app
-  HELM_CHART_PATH: helm-charts
+  HELM_CHART_PATH: helm-chart
   K8S_NAMESPACE: prod
   HELM_VALUES_FILE: values-prod.yaml
 
@@ -34,10 +35,14 @@ jobs:
         docker push $IMAGE_NAME:$IMAGE_TAG
         echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
+    - name: Check repository files
+      run: |
+        pwd
+        ls -R
+
     - name: Update Helm values
       run: |
         yq e -i ".flask.image = \"${IMAGE_NAME}:${IMAGE_TAG}\"" $HELM_CHART_PATH/$HELM_VALUES_FILE
-
 
     - name: Install ArgoCD CLI
       run: |
@@ -50,4 +55,4 @@ jobs:
           --username ${{ secrets.ARGOCD_USERNAME }} \
           --password ${{ secrets.ARGOCD_PASSWORD }} \
           --insecure
-        argocd app sync flask-app
+        argocd app sync flask-app --grpc-web
