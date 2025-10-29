@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flask
-  namespace: {{ .Values.namespace }}
+  namespace: prod 
 spec:
   replicas: {{ .Values.flask.replicas }}
   selector:
@@ -13,14 +13,12 @@ spec:
       labels:
         app: flask
     spec:
+      serviceAccountName: flask-app-sa 
       containers:
         - name: flask_app
           image: {{ .Values.flask.image }}
           ports:
             - containerPort: {{ .Values.flask.containerPort }}
-          envFrom:
-            - secretRef:
-                name: flask-app-secret-k8s 
           env:
             - name: DB_USER
               value: "postgres"
