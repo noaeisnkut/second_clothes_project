@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - s3
+
 env:
   IMAGE_NAME: noa10203040/flask_app
   HELM_CHART_PATH: helm-charts/myproject
@@ -32,18 +33,20 @@ jobs:
         docker build -t $IMAGE_NAME:$IMAGE_TAG backend/
         docker push $IMAGE_NAME:$IMAGE_TAG
         echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
     - name: Update Helm values
       run: |
         yq e -i ".flask.image = \"${IMAGE_NAME}:${IMAGE_TAG}\"" $HELM_CHART_PATH/$HELM_VALUES_FILE
+
     - name: Install ArgoCD CLI
       run: |
         curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
         chmod +x /usr/local/bin/argocd
+
     - name: Sync ArgoCD application
-      uses: devops-infra/action-argocd@v2
-      with:
-        argocd_server: ${{ secrets.ARGOCD_SERVER }}
-        argocd_username: ${{ secrets.ARGOCD_USERNAME }}
-        argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
-        app_name: flask-app
-        method: sync
+      run: |
+        argocd login ${{ secrets.ARGOCD_SERVER }} \
+          --username ${{ secrets.ARGOCD_USERNAME }} \
+          --password ${{ secrets.ARGOCD_PASSWORD }} \
+          --insecure
+        argocd app sync flask-app
