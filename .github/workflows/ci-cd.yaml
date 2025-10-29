@@ -3,10 +3,6 @@ on:
   push:
     branches:
       - s3
-    paths:
-      - 'backend/**'
-      - 'helm-charts/**'
-
 env:
   IMAGE_NAME: noa10203040/flask_app
   HELM_CHART_PATH: helm-charts/myproject
