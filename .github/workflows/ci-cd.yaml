@@ -2,7 +2,7 @@ name: CI/CD - Prod
 on:
   push:
     branches:
-      - main
+      - s3
     paths:
       - 'backend/**'
       - 'helm-charts/**'
