@@ -1,4 +1,4 @@
-#runci-cd
+#runci-cd-dev.yaml
 name: CI/CD - Dev
 on:
   push:
