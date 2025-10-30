@@ -11,7 +11,7 @@ spec:
     path: "helm-chart"
     helm:
       valueFiles:
-        - helm-chart/values-staging.yaml
+        - values-staging.yaml
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: staging
