@@ -1,4 +1,4 @@
-#run
+#run cd for dev environment
 name: CI/CD - Dev
 on:
   push:
