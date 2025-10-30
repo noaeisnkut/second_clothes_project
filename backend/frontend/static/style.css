@@ -302,7 +302,7 @@ ul li a:hover {
     box-shadow: 0 5px 12px rgba(93, 64, 55, 0.4);
 }
 
-/* עיצוב נוסף לכרטיסי מוצרים */
+
 li .description {
     font-size: 14px;
     color: #6d4c41;
@@ -311,7 +311,7 @@ li .description {
     line-height: 1.5;
 }
 
-/* אפקט וינטג' לרקע */
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -327,7 +327,6 @@ li {
     animation: fadeIn 0.5s ease-out;
 }
 
-/* סגנון לכותרות משנה */
 h3 {
     color: #6d4c41;
     font-family: 'Georgia', serif;
@@ -338,7 +337,6 @@ h3 {
     letter-spacing: 1px;
 }
 
-/* הודעת ברוכים הבאים למשתמש מחובר */
 .welcome-message {
     text-align: center;
     background-color: #fff9f0;
