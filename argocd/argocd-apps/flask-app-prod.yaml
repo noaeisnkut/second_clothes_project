@@ -11,7 +11,7 @@ spec:
     path: "helm-chart"
     helm:
       valueFiles:
-        - helm-chart/values-prod.yaml
+        - values-prod.yaml
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: prod
