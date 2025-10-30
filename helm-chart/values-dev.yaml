@@ -1,9 +1,8 @@
 namespace: dev
 flask:
-  image: noa10203040/flask_app:latest
+  image: noa10203040/flask_app:ef5ad145
   replicas: 1
   containerPort: 5000
   servicePort: 80
-
 aws:
   region: us-east-1
