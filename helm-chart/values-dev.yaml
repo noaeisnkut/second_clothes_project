@@ -1,7 +1,7 @@
 namespace: dev
 serviceAccountName: flask-app-sa
 flask:
-  image: noa10203040/flask_app:latest
+  image: noa10203040/flask_app:bc166265
   replicas: 1
   containerPort: 5000
   servicePort: 80
