@@ -1,6 +1,6 @@
 namespace: dev
 flask:
-  image: noa10203040/flask_app:ef5ad145
+  image: noa10203040/flask_app:9e876cec
   replicas: 1
   containerPort: 5000
   servicePort: 80
