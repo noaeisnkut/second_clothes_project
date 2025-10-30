@@ -4,7 +4,7 @@ metadata:
   name: flask-app
   namespace: argocd
 spec:
-  project: stage
+  project: staging
   source:
     repoURL: 'https://github.com/noaeisnkut/second_clothes_project.git'
     targetRevision: s3
@@ -14,7 +14,7 @@ spec:
         - helm-chart/values-staging.yaml
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: stage
+    namespace: staging
   syncPolicy:
     automated:
       prune: true

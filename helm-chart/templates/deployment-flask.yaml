@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flask
-  namespace: prod 
+  namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.flask.replicas }}
   selector:
