@@ -7,12 +7,12 @@ on:
 env:
   IMAGE_NAME: noa10203040/flask_app
   HELM_CHART_PATH: helm-chart
-  HELM_VALUES_FILE: values-dev.yaml
+  HELM_VALUES_FILE: values-staging.yaml
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    if:   contains(github.event.head_commit.message, '[dev]')
+    if:   contains(github.event.head_commit.message, '[staging]')
     permissions:
       contents: write
       packages: write
