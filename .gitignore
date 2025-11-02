@@ -25,7 +25,7 @@ ec2_terra_task/credentials
 backend/__pycache__/
 helm-chart/values-us-east-1a.yaml
 helm-chart/values-us-east-1b.yaml
-root/
 k9s_linux_amd64.deb
 root/live/prod/eks/.terragrunt-cache/*
 */.terragrunt-cache
+/root/
