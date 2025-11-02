@@ -114,9 +114,7 @@ def add():
        image_filename = None
        if image_file:
            filename = secure_filename(image_file.filename)
-           local_path = f"/tmp/{filename}"
-           image_file.save(local_path)
-           s3.upload_file(local_path, bucket_name, filename)
+           s3.upload_fileobj(image_file, bucket_name, filename)
            image_filename = filename
 
 
