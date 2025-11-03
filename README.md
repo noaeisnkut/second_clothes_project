@@ -8,6 +8,7 @@ The repository is stored on the `main` branch and consists of:
 
 
 Deployment Instructions:
+
 **Apply all infrastructure and applications using Terragrunt:**
 run terragrunt run --all apply 
 **Verify that all applications are synchronized and healthy in ArgoCD:**
