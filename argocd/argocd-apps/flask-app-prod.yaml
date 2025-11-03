@@ -4,7 +4,7 @@ metadata:
   name: prod-flask-app
   namespace: argocd
 spec:
-  project: prod
+  project: my-argocd-project
   source:
     repoURL: 'https://github.com/noaeisnkut/second_clothes_project.git'
     targetRevision: s3

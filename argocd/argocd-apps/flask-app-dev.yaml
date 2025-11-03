@@ -1,14 +1,13 @@
-
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: dev-flask-app
   namespace: argocd
 spec:
-  project: dev
+  project: my-argocd-project
   source:
     repoURL: 'https://github.com/noaeisnkut/second_clothes_project.git'
-    targetRevision: s3
+    targetRevision: main
     path: "helm-chart"
     helm:
       valueFiles:
@@ -20,4 +19,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-
