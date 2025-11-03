@@ -19,3 +19,7 @@ aws eks update-kubeconfig --region us-east-1 --name dev-eks-cluster
 kubectl get applications -n argocd
 **Access your application via the ALB created by the ALB controller + Ingress:**
 kubectl get ingress flask-ingress -n staging -w
+**when you want to push a commit and triiger dev or staging or prod env, just run:**
+git add .(something that changed)
+git commit -m "trigger workflow [dev]
+git puah
