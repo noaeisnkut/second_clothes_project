@@ -24,8 +24,8 @@ jobs:
 
     - name: Sync with remote branch
       run: |
-        git fetch origin s3
-        git reset --hard origin/s3
+        git fetch origin main
+        git reset --hard origin/main
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
