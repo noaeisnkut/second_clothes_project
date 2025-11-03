@@ -1,0 +1,11 @@
+namespace: prod         
+serviceAccountName: flask-app-sa
+
+flask:
+  image: noa10203040/flask_app:latest
+  replicas: 1
+  containerPort: 5000
+  servicePort: 80
+  secretKey: prod_secret_key
+aws:
+  region: us-east-1
