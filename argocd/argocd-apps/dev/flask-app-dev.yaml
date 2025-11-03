@@ -7,8 +7,8 @@ spec:
   project: my-argocd-project
   source:
     repoURL: 'https://github.com/noaeisnkut/second_clothes_project.git'
-    targetRevision: main
-    path: "helm-chart"
+    targetRevision: s3
+    path: helm-chart
     helm:
       valueFiles:
         - values-dev.yaml
