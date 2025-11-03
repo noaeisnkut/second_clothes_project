@@ -5,6 +5,7 @@ The repository is stored on the `main` branch and consists of:
 - Application development files (`backend/`, etc.)
 - Helm chart files (`helm-chart/`)
 - ArgoCD application manifests (`argocd/argocd-apps/`)
+- github workflows
 
 
 Deployment Instructions:
