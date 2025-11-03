@@ -11,6 +11,9 @@ Deployment Instructions:
 
 **Apply all infrastructure and applications using Terragrunt:**
 run terragrunt run --all apply 
+**Configure kubectl for the EKS cluster**:
+aws eks update-kubeconfig --region us-east-1 --name prod-eks-cluster
+aws eks update-kubeconfig --region us-east-1 --name dev-eks-cluster
 **Verify that all applications are synchronized and healthy in ArgoCD:**
 kubectl get applications -n argocd
 **Access your application via the ALB created by the ALB controller + Ingress:**
