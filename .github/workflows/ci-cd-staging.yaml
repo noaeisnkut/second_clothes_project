@@ -1,5 +1,5 @@
 #runci-cd-dev.yaml-check1
-name: CI/CD - Dev
+name: CI/CD - staging
 on:
   push:
     branches:
@@ -21,6 +21,11 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+    - name: Run backend tests
+      run: |
+        cd backend
+        pip install -r requirements.txt
+        pytest app_test.py
 
     - name: Sync with remote branch
       run: |
@@ -56,4 +61,4 @@ jobs:
       run: |
         git add $HELM_CHART_PATH/$HELM_VALUES_FILE
         git commit -m "Update Flask image to $IMAGE_NAME:$IMAGE_TAG" || echo "No changes to commit"
-        git push origin s3
+        git push origin main
