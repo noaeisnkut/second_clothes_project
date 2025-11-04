@@ -24,6 +24,5 @@ git add .(something that changed)
 git commit -m "trigger workflow [dev]
 git puah
 
-**module of infra:**
-<img width="343" height="665" alt="image" src="https://github.com/user-attachments/assets/f7c8d575-f7f0-406b-9927-65aaee8cdba5" />
+
 
