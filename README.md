@@ -123,6 +123,8 @@ if both happen, you are good to go!
 The diagram above visualizes the full CI/CD flow for the DEV environment.  
 It shows how a Git commit tagged with `[dev]` triggers a GitHub Actions workflow that builds a Docker image, updates Helm values, commits the changes back to Git, and allows ArgoCD to automatically sync and deploy the new version to the EKS cluster.  
 This image represents the GitOps model where Git is the single source of truth and ArgoCD continuously reconciles Kubernetes with the desired state stored in the repository.
+
+
 <img width="287" height="687" alt="image" src="https://github.com/user-attachments/assets/58524213-32cd-433f-b380-7d759a4ad8c5" />
 
 
