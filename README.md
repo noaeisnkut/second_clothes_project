@@ -19,7 +19,6 @@ It integrates infrastructure provisioning, GitOps synchronization, and CI/CD aut
 
 Run the following command from the Terragrunt root directory:
 
-```bash
 terragrunt run-all apply
 This will create all infrastructure components and deploy all applications across environments.
 
@@ -52,7 +51,6 @@ Local port: 8080 → ArgoCD server port 443
 Namespace: argocd
 
 Verify Cluster Health and Workloads
-
 bash
 Copy code
 kubectl get nodes
@@ -66,16 +64,15 @@ kubectl get ingress flask-ingress -n staging -w
 CI/CD Process
 The CI/CD pipeline integrates GitHub Actions, Docker Hub, and ArgoCD. The flow is as follows:
 
-Step 1: Developer Pushes Code to Main with [dev] Tag
+##Step 1: Developer Pushes Code to Main with [dev] Tag
 The developer commits and pushes code.
 
 The commit message must contain [dev] so the CI/CD job will run.
-
 This is the manual trigger for the DEV pipeline.
 
-Step 2: GitHub Actions Starts the Pipeline
-GitHub sees the push event.
 
+##Step 2: GitHub Actions Starts the Pipeline
+GitHub sees the push event.
 The job filters commits using:
 
 yaml
@@ -140,6 +137,14 @@ Rolls out the new version with zero downtime (RollingUpdate)
 
 Final Result:
 The backend Flask app is now updated inside the EKS DEV environment.
+
+## Visualization
+
+The diagram above visualizes the full CI/CD flow for the DEV environment.  
+It shows how a Git commit tagged with `[dev]` triggers a GitHub Actions workflow that builds a Docker image, updates Helm values, commits the changes back to Git, and allows ArgoCD to automatically sync and deploy the new version to the EKS cluster.  
+This image represents the GitOps model where Git is the single source of truth and ArgoCD continuously reconciles Kubernetes with the desired state stored in the repository.
+<img width="287" height="687" alt="image" src="https://github.com/user-attachments/assets/58524213-32cd-433f-b380-7d759a4ad8c5" />
+
 
 
 
