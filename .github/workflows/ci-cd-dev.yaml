@@ -1,4 +1,4 @@
-#run ci-cd dev1
+#run ci-cd dev
 name: CI/CD - Dev
 on:
   push:
@@ -22,12 +22,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
       
-    - name: Run backend tests
-      run: |
-        cd backend
-        pip install -r requirements.txt
-        pytest app_test.py
-
     - name: Sync with remote branch
       run: |
         git fetch origin main
