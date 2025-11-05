@@ -31,11 +31,13 @@ AWS Load Balancer Controller
 These roles are linked to Kubernetes ServiceAccounts using IRSA (IAM Roles for Service Accounts), ensuring secure and granular IAM permissions.
 All relevant Helm charts—including the AWS Load Balancer Controller—are installed automatically as part of the provisioning process.
 
+**his command is meant to update your kubeconfig file (usually ~/.kube/config) so that you can connect to your EKS cluster using kubectl:**
+aws eks update-kubeconfig --name dev-eks-cluster --region us-east-1 
+**or in the other cluster:**
+aws eks update-kubeconfig --name prod-eks-cluster --region us-east-1
 
 Post-Deployment Verification
 **Access ArgoCD UI**
-
-Copy code
 # Show initial password
 kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath="{.data.password}" | base64 --decode
