@@ -18,8 +18,7 @@ It integrates infrastructure provisioning, GitOps synchronization, and CI/CD aut
 ### 1. Provision Infrastructure and Deploy Applications
 
 Run the following command from the Terragrunt root directory:
-bash
-`terragrunt run --all apply`
+```bash
 This will create all infrastructure components and deploy all applications across environments.
 
 
