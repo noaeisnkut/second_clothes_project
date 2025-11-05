@@ -55,7 +55,7 @@ kubectl get pods -A
 kubectl get svc -A
 
 **Verify Load Balancer Address**:
-kubectl get ingress flask-ingress -n staging -w
+kubectl get ingress flask-ingress -n staging -w (to look for the app in browser add http:// to alb address)
 
 **CI/CD Process**
 The CI/CD pipeline integrates GitHub Actions, Docker Hub, and ArgoCD. The flow is as follows:
