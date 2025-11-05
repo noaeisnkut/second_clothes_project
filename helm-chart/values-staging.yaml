@@ -1,8 +1,7 @@
-namespace: staging         
+namespace: staging
 serviceAccountName: flask-app-sa
-
 flask:
-  image: noa10203040/flask_app:latest
+  image: noa10203040/flask_app:7c742dba
   replicas: 1
   containerPort: 5000
   servicePort: 80
