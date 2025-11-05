@@ -13,49 +13,30 @@ It integrates infrastructure provisioning, GitOps synchronization, and CI/CD aut
 
 ---
 
-## Deployment Flow
+**code info**:
+This is a Flask web application for managing second-hand clothes. It uses Flask-SQLAlchemy to connect to a PostgreSQL database and store user accounts (User) and product listings (AddClothe). Users can sign up, log in, add products with images, and delete their own products. Images are stored in S3, and URLs are generated with a presigned link for secure access.
+The app retrieves sensitive information, like the database password, from AWS Secrets Manager using boto3, which is the AWS SDK for Python. Botocore is a lower-level library used internally by boto3 to handle requests, responses, and error handling with AWS services. Together, they allow the Flask app to securely interact with AWS services, such as S3 for image storage and Secrets Manager for fetching credentials, without hardcoding secrets in the code.
+Environment variables are used for configuration, including AWS region, database connection details, and secret keys, making the app flexible for local development, Docker, or deployment in Kubernetes.
 
-### 1. Provision Infrastructure and Deploy Applications
+**why do i have db_dumps in my code?**:
+**Migration to PostgreSQL**
+I wanted all the pods in my cluster to be able to access a single, centralized database instead of relying on a local database on each node. So, I decided to move my data to PostgreSQL in the cloud using AWS RDS.
+First, I created a PostgreSQL database in RDS, picked a recent version with Multi-AZ deployment, set up a username and password, enabled public access, and saved the database endpoint.
+Next, I installed the psycopg2 driver in Flask and updated the connection string in my code to point to the RDS database instead of the local one.
+Then, I exported only the data I needed from MySQL into an SQL dump and imported it into PostgreSQL using psql, loading it into the cloud database.
+Now, all the pods in the cluster can access the database remotely, without depending on a local database.
+Why PostgreSQL (RDS) instead of PVCs or node storage?
+1. I/O limitations – Regular Kubernetes volumes don’t always handle high read/write throughput well, especially when many pods access them at the same time.
+2. Availability across AZs – PVCs or PVs are usually tied to a single node or availability zone, so pods in other zones might not access them reliably. RDS with Multi-AZ solves this.
+3. Scalability and durability – A managed cloud database takes care of failures, backups, replication, and maintenance automatically, which is much harder to handle manually with PVs/PVCs.
+4. Best practice – When consistency, performance, and reliability matter, using a managed database service like RDS is much better than relying on local node storage.
 
-Run the following command from the Terragrunt root directory:
+**other alternative to postgress**:
+1. Block storage volumes (EBS/PVCs) – I could have stored the database directly on a persistent volume backed by block storage. This would give a dedicated storage space for the database, but it’s tied to a single node or AZ, which makes it harder for pods in other zones to access it reliably. I/O performance could also become a bottleneck if many pods are reading/writing simultaneously.
 
-terragrunt run-all apply
-
-This will create all infrastructure components and deploy all applications across environments.
-
-
-**IAM Roles & Add-ons**
-The deployment automatically includes IAM roles and policies required for:
-Cluster Autoscaler
-AWS Load Balancer Controller
-These roles are linked to Kubernetes ServiceAccounts using IRSA (IAM Roles for Service Accounts), ensuring secure and granular IAM permissions.
-All relevant Helm charts-including the AWS Load Balancer Controller-are installed automatically as part of the provisioning process.
-
-**his command is meant to update your kubeconfig file (usually ~/.kube/config) so that you can connect to your EKS cluster using kubectl:**
-aws eks update-kubeconfig --name dev-eks-cluster --region us-east-1 
-**or in the other cluster:**
-aws eks update-kubeconfig --name prod-eks-cluster --region us-east-1
-
-Post-Deployment Verification
-**Access ArgoCD UI**
-# Show initial password
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode
-
-# Port-forward ArgoCD to localhost
-kubectl port-forward svc/argocd-server -n argocd 8080:443
-
-Username: admin
-Local port: 8080 → ArgoCD server port 443
-Namespace: argocd
-
-
-**Verify Cluster Health and Workloads**:
-kubectl get nodes
-kubectl get pods -A
-kubectl get svc -A
-
-**Verify Load Balancer Address**:
-kubectl get ingress flask-ingress -n staging -w (to look for the app in browser add http:// to alb address)
+2. S3 or object storage – I could have stored the database dump or snapshots in S3. This works for backups or static storage, but it’s not suitable as a live, transactional database, since S3 doesn’t support SQL queries or frequent read/write operations efficiently.
+3. Exporting to MySQL or RDS Aurora – I could have replicated the data into a MySQL database or used Aurora. This can work, but the migration and schema adaptation would have been more complicated. Aurora is scalable and highly available like RDS Postgres, but since my app already depends on PostgreSQL-specific features, this would have added extra complexity.
+4. PV + containerized PostgreSQL – I could have taken the SQL dump I created from MySQL via SQLAlchemy and loaded it into a PostgreSQL instance running inside a pod, using a temporary folder or persistent volume. This would allow me to test or migrate the database without immediately using RDS. However, I would still be responsible for managing backups, replication, failover, and availability across multiple AZs, which is much harder to handle manually compared to using a managed service like RDS.
 
 **CI/CD Process**
 The CI/CD pipeline integrates GitHub Actions, Docker Hub, and ArgoCD. The flow is as follows:
