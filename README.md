@@ -39,9 +39,7 @@ aws eks update-kubeconfig --name prod-eks-cluster --region us-east-1
 Post-Deployment Verification
 **Access ArgoCD UI**
 # Show initial password
-kubectl -n argocd get secret argocd-initial-admin-secret \
-  -o jsonpath="{.data.password}" | base64 --decode
-echo
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode
 
 # Port-forward ArgoCD to localhost
 kubectl port-forward svc/argocd-server -n argocd 8080:443
@@ -52,8 +50,6 @@ Namespace: argocd
 
 
 **Verify Cluster Health and Workloads**:
-
-
 kubectl get nodes
 kubectl get pods -A
 kubectl get svc -A
