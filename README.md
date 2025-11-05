@@ -104,6 +104,19 @@ Rolls out the new version with zero downtime (RollingUpdate)
 
 **Final Result:**
 The backend Flask app is now updated inside the EKS DEV environment.
+**how to check if ci-cd works?!**:
+in the remote, check for example the values-dev.yaml and look for  a change in the virsion of the image - if yes, congrats! 
+you must also check if argo also synced the cluster, check it by :
+kubectl get pods -n dev -o wide (to see the running pods)
+and to describe each proccess in the pod:
+ kubectl describe pod <pod> -n dev
+you'll be lokking for the line:
+Normal  Pulling    27m   kubelet            Pulling image "noa10203040/flask_app:90476060"
+Normal  Pulled     27m   kubelet            Successfully pulled image "noa10203040/flask_app:90476060" in 19.539s (19.539s including waiting)
+if both happen, you are good to go!
+
+
+
 
 ## Visualization
 
@@ -115,18 +128,6 @@ This image represents the GitOps model where Git is the single source of truth a
 
 
 
-
-
-**how to check if ci-cd works?!**:
-in the remote, check for example the values-dev.yaml and look for  a change in the virsion of the image - if yes, congrats! 
-you must also check if argo also synced the cluster, check it by :
-kubectl get pods -n dev -o wide (to see the running pods)
-and to describe each proccess in the pod:
- kubectl describe pod <pod> -n dev
-you'll be lokking for the line:
-Normal  Pulling    27m   kubelet            Pulling image "noa10203040/flask_app:90476060"
-Normal  Pulled     27m   kubelet            Successfully pulled image "noa10203040/flask_app:90476060" in 19.539s (19.539s including waiting)
-if both happen, you are good to go!
 
 
 
