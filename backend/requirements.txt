@@ -13,5 +13,4 @@ pytz
 six
 cryptography
 PyMySQL
-pytest
 psycopg2-binary
