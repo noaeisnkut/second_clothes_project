@@ -18,7 +18,9 @@ It integrates infrastructure provisioning, GitOps synchronization, and CI/CD aut
 ### 1. Provision Infrastructure and Deploy Applications
 
 Run the following command from the Terragrunt root directory:
-```bash
+
+terragrunt run-all apply
+
 This will create all infrastructure components and deploy all applications across environments.
 
 
@@ -35,14 +37,14 @@ Post-Deployment Verification
 
 Copy code
 # Show initial password
-'kubectl -n argocd get secret argocd-initial-admin-secret \
+kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath="{.data.password}" | base64 --decode
-echo'
+echo
 
 # Port-forward ArgoCD to localhost
-'kubectl port-forward svc/argocd-server -n argocd 8080:443
-Username: admin'
+kubectl port-forward svc/argocd-server -n argocd 8080:443
 
+Username: admin
 Local port: 8080 → ArgoCD server port 443
 Namespace: argocd
 
@@ -50,9 +52,9 @@ Namespace: argocd
 **Verify Cluster Health and Workloads**:
 
 
-'kubectl get nodes'
-'kubectl get pods -A'
-'kubectl get svc -A'
+kubectl get nodes
+kubectl get pods -A
+kubectl get svc -A
 
 **Verify Load Balancer Address**:
 kubectl get ingress flask-ingress -n staging -w
@@ -71,8 +73,8 @@ This is the manual trigger for the DEV pipeline.
 GitHub sees the push event.
 The job filters commits using:
 
-'if: contains(github.event.head_commit.message, '[dev]')
-Only commits meant for DEV run this workflow.'
+if: contains(github.event.head_commit.message, '[dev]')
+Only commits meant for DEV run this workflow.
 
 **Step 3: Backend Tests Execute**
 GitHub Actions installs Python dependencies.
@@ -98,8 +100,8 @@ ArgoCD/EKS can now pull this image when deploying.
 **Step 7: Update Helm Chart Values**
 Inside values-dev.yaml, this line is updated:
 
-'flask.image: "noa10203040/flask_app:<sha>"
-Ensures Kubernetes deploys the new image version.'
+flask.image: "noa10203040/flask_app:<sha>"
+Ensures Kubernetes deploys the new image version.
 
 **Step 8: Commit Helm Changes Back to GitHub**
 GitHub Actions commits the updated Helm values file.
