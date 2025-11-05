@@ -131,6 +131,16 @@ It shows how a Git commit tagged with `[dev]` triggers a GitHub Actions workflow
 This image represents the GitOps model where Git is the single source of truth and ArgoCD continuously reconciles Kubernetes with the desired state stored in the repository.
 <img width="287" height="687" alt="image" src="https://github.com/user-attachments/assets/58524213-32cd-433f-b380-7d759a4ad8c5" />
 
+**how to check if ci-cd works?!**:
+in the remote, check for example the values-dev.yaml and look for  a change in the virsion of the image - if yes, congrats! 
+you must also check if argo also synced the cluster, check it by :
+kubectl get pods -n dev -o wide (to see the running pods)
+and to describe each proccess in the pod:
+ kubectl describe pod <pod> -n dev
+you'll be lokking for the line:
+Normal  Pulling    27m   kubelet            Pulling image "noa10203040/flask_app:90476060"
+Normal  Pulled     27m   kubelet            Successfully pulled image "noa10203040/flask_app:90476060" in 19.539s (19.539s including waiting)
+if both happen, you are good to go!
 
 
 
