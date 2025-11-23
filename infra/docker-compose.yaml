@@ -11,8 +11,8 @@ services:
       SECRET_NAME: flask-app-secret
       AWS_REGION: us-east-1
       DB_USER: postgres
-      DB_HOST: my-postgress-db.cc3m62swkfac.us-east-1.rds.amazonaws.com
-      DB_NAME: flask
+      DB_HOST: mydb.cc3m62swkfac.us-east-1.rds.amazonaws.com
+      DB_NAME: mydb
       DB_PORT: 5432
       S3_BUCKET: my-second-hand-clothes-storage
       SECRET_KEY: dev_secret_key
