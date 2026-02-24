@@ -1,10 +1,17 @@
 namespace: dev
 serviceAccountName: flask-app-sa
+
+argocd:
+  hostname: argocd.flask-app.com
+
 flask:
   image: noa10203040/flask_app:90476060
   replicas: 1
   containerPort: 5000
   servicePort: 80
+  hostname: my-favorite-second-hand-shop.com
   secretKey: dev_secret_key
-aws:
-  region: us-east-1
+
+db:
+  host: "my-postgress-db.cc3m62swkfac.us-east-1.rds.amazonaws.com"
+  region: "us-east-1"

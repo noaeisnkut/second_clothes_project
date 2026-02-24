@@ -1,10 +1,11 @@
 Flask==2.3.6
 Flask-SQLAlchemy==3.0.5
 Werkzeug==2.3.7
-Jinja2==3.1.6
-itsdangerous==2.2.2
+Jinja2==3.1.2
+itsdangerous==2.1.2
 Click==8.1.7
 MarkupSafe==2.1.5
-boto3==1.42.52
-botocore==1.42.52
 psycopg2-binary==2.9.11
+azure-identity==1.15.0
+azure-keyvault-secrets==4.7.0
+azure-storage-blob==12.19.0
