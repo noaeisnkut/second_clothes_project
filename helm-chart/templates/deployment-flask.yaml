@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: flask
   namespace: {{ .Values.namespace }}
+  labels:
+    app: flask
 spec:
   replicas: {{ .Values.flask.replicas }}
   selector:
@@ -12,8 +14,9 @@ spec:
     metadata:
       labels:
         app: flask
+        azure.workload.identity/use: "true"
     spec:
-      serviceAccountName: {{ .Values.serviceAccountName }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
         - name: flask-app
           image: {{ .Values.flask.image }}
@@ -21,14 +24,18 @@ spec:
             - containerPort: {{ .Values.flask.containerPort }}
           env:
             - name: DB_USER
-              value: "postgres"
+              value: {{ .Values.db.user | default "psqladmin" | quote }}
             - name: DB_HOST
-              value: "my-postgress-db.cc3m62swkfac.us-east-1.rds.amazonaws.com"
+              value: {{ .Values.db.host | quote }}
             - name: DB_NAME
-              value: "flask"
+              value: {{ .Values.db.name | default "second_hand_shop" | quote }}
             - name: DB_PORT
-              value: "5432"
-            - name: AWS_REGION
-              value: "{{ .Values.aws.region }}"
+              value: {{ .Values.db.port | default "5432" | quote }}
+            - name: AZURE_KEYVAULT_URL
+              value: {{ .Values.azure.keyvaultUrl | quote }}
+            - name: AZURE_STORAGE_ACCOUNT_NAME
+              value: {{ .Values.azure.storageAccountName | quote }}
+            - name: AZURE_STORAGE_CONTAINER
+              value: {{ .Values.azure.containerName | default "clothes-images" | quote }}
             - name: SECRET_KEY
-              value: "{{ .Values.flask.secretKey }}"
+              value: {{ .Values.flask.secretKey | quote }}

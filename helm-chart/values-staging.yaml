@@ -1,8 +1,10 @@
 namespace: staging
-serviceAccountName: flask-app-sa
 
-argocd:
-  hostname: argocd.flask-app.com
+serviceAccount:
+  create: true
+  name: flask-app-sa
+  annotations:
+    azure.workload.identity/client-id: "YOUR_AZURE_IDENTITY_CLIENT_ID"
 
 flask:
   image: noa10203040/flask_app:90476060
@@ -11,7 +13,16 @@ flask:
   servicePort: 80
   hostname: my-favorite-second-hand-shop.com
   secretKey: staging_secret_key
+  podLabels:
+    azure.workload.identity/use: "true"
 
 db:
-  host: "my-postgress-db.cc3m62swkfac.us-east-1.rds.amazonaws.com"
-  region: "us-east-1"
+  host: "flask-db.postgres.database.azure.com" 
+  name: "second_hand_shop"
+  user: "psqladmin"
+  port: 5432
+
+azure:
+  keyvaultUrl: "https://your-vault-name.vault.azure.net/"
+  storageAccountName: "yourstorageaccountname"
+  containerName: "clothes-images"
